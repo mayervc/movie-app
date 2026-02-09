@@ -1,0 +1,454 @@
+# Cursor Rules para Movie App Frontend
+
+## Contexto del Proyecto
+
+Este es el frontend de Movie App, construido con **Vite + React + TypeScript + Tailwind CSS + Framer Motion**.
+
+## Stack Tecnológico
+
+- **Vite**: Build tool y dev server
+- **React 18+**: Framework UI con hooks
+- **TypeScript**: Tipado estático estricto
+- **Tailwind CSS**: Estilos utilitarios, mobile-first
+- **Framer Motion**: Animaciones fluidas (200-300ms)
+- **React Router**: Navegación SPA
+- **Axios**: Llamadas HTTP al backend
+- **React Icons / Lucide React**: Iconos
+
+## Estructura de Carpetas
+
+```
+src/
+├── assets/              # Imágenes, logos, iconos estáticos
+├── components/          # Componentes reutilizables
+│   ├── ui/             # Componentes base (Button, Card, Input, Modal)
+│   ├── layout/         # Header, Footer, Sidebar, Navigation
+│   └── movies/         # Componentes específicos de películas
+├── pages/              # Páginas completas (Home, MovieDetails, Search)
+├── hooks/              # Custom hooks (useMovies, useSearch, useDebounce)
+├── services/           # Servicios API (api.ts, movies.service.ts, auth.service.ts)
+├── context/            # Context API (AuthContext, FavoritesContext)
+├── types/              # Tipos TypeScript (movie.types.ts, user.types.ts, api.types.ts)
+├── utils/              # Funciones helper (formatters, validators, constants)
+└── styles/             # CSS global y configuraciones
+```
+
+## Patrones de Componentes
+
+### Estructura Estándar
+
+```tsx
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import type { Movie } from "@/types/movie.types";
+
+interface ComponentProps {
+  // Props tipadas explícitamente
+  prop1: string;
+  prop2?: number;
+}
+
+export const ComponentName = ({ prop1, prop2 }: ComponentProps) => {
+  // 1. Estados locales
+  const [state, setState] = useState<Type>(initialValue);
+  
+  // 2. Efectos
+  useEffect(() => {
+    // Lógica de efectos
+  }, [dependencies]);
+  
+  // 3. Handlers
+  const handleAction = () => {
+    // Lógica de handlers
+  };
+  
+  // 4. Render
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="..."
+    >
+      {/* JSX */}
+    </motion.div>
+  );
+};
+```
+
+### Orden de Imports
+
+1. React y hooks
+2. Librerías externas (framer-motion, react-router)
+3. Tipos TypeScript
+4. Componentes locales
+5. Hooks personalizados
+6. Servicios/Utils
+7. Estilos (si es necesario)
+
+## Diseño y Estilos
+
+### Paleta de Colores
+
+- **Fondo principal**: `bg-slate-900` (#0F172A)
+- **Acento primario**: `text-blue-500` / `bg-blue-500` (#3B82F6)
+- **Acento secundario**: `text-violet-500` / `bg-violet-500` (#8B5CF6)
+- **Texto principal**: `text-slate-50` (#F8FAFC)
+- **Texto secundario**: `text-slate-400` (#94A3B8)
+- **Bordes**: `border-slate-700` (#334155)
+
+### Responsive Design
+
+**Breakpoints Tailwind:**
+- `sm`: 640px (móvil grande)
+- `md`: 768px (tablet)
+- `lg`: 1024px (laptop)
+- `xl`: 1280px (desktop)
+- `2xl`: 1536px (pantallas grandes)
+
+**Grids Responsive:**
+```tsx
+// Desktop: 5-6 columnas, Tablet: 2-3, Móvil: 1-2
+className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-6"
+```
+
+### Animaciones
+
+- **Duración estándar**: 200-300ms para interacciones
+- **Duración scroll reveal**: 500ms
+- **Hover scale**: `scale(1.05)` con `duration: 0.2s`
+- **Tap scale**: `scale(0.95)` para feedback táctil
+
+**Ejemplo:**
+```tsx
+<motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  transition={{ duration: 0.2 }}
+>
+  Click me
+</motion.button>
+```
+
+## Integración con Backend
+
+### Configuración de API
+
+**Base URL:** `http://localhost:3000/api` (desarrollo)
+**Variable de entorno:** `VITE_API_BASE_URL`
+
+### Servicios API
+
+Siempre usar el servicio `api.ts` configurado con interceptores:
+
+```tsx
+import api from '@/services/api';
+import type { Movie } from '@/types/movie.types';
+
+export const moviesService = {
+  getAll: async (): Promise<Movie[]> => {
+    const { data } = await api.get('/movies');
+    return data;
+  },
+  
+  getById: async (id: number): Promise<Movie> => {
+    const { data } = await api.get(`/movies/${id}`);
+    return data;
+  },
+  
+  search: async (params: MovieSearchParams) => {
+    const { data } = await api.post('/movies/search', params);
+    return data;
+  },
+};
+```
+
+### Autenticación
+
+- Token almacenado en `localStorage` con key `movie_app_token`
+- Token agregado automáticamente vía interceptor de Axios
+- Header: `Authorization: Bearer <token>`
+- Manejar errores 401 redirigiendo al login
+
+### Tipos TypeScript
+
+Los tipos deben coincidir **exactamente** con las respuestas del backend:
+
+```tsx
+// types/movie.types.ts
+export interface Movie {
+  id: number;
+  title: string;
+  releaseDate: string; // ISO date string
+  genres: string[];
+  duration: number;
+  trending: boolean;
+  rating: number | null;
+  image_url: string | null;
+  description: string | null;
+  clasification: string | null;
+  tmdb_id: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+**Referencias:**
+- Ver `CONFIGURACION_FRONTEND_BACKEND.md` en el backend para tipos completos
+- Usar el subagent `backend-frontend-bridge` para sincronizar tipos
+
+## Manejo de Estados
+
+### Loading States
+
+Siempre mostrar estados de carga con skeletons:
+
+```tsx
+{loading ? (
+  <div className="grid grid-cols-...">
+    {[...Array(12)].map((_, i) => (
+      <SkeletonCard key={i} />
+    ))}
+  </div>
+) : (
+  <MovieGrid movies={movies} />
+)}
+```
+
+### Error States
+
+Manejar errores de forma consistente:
+
+```tsx
+{error ? (
+  <div className="text-red-400">
+    {error.response?.data?.errors?.[0]?.message || 'Error al cargar datos'}
+  </div>
+) : (
+  // Contenido
+)}
+```
+
+### Estados Vacíos
+
+Mostrar mensajes cuando no hay datos:
+
+```tsx
+{movies.length === 0 ? (
+  <div className="text-center text-slate-400 py-12">
+    No se encontraron películas
+  </div>
+) : (
+  <MovieGrid movies={movies} />
+)}
+```
+
+## Hooks Personalizados
+
+### Patrón de Hook
+
+```tsx
+// hooks/useMovies.ts
+import { useState, useEffect } from 'react';
+import { moviesService } from '@/services/movies.service';
+import type { Movie } from '@/types/movie.types';
+
+export const useMovies = () => {
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        setLoading(true);
+        const data = await moviesService.getAll();
+        setMovies(data);
+      } catch (err: any) {
+        setError(err.response?.data?.errors?.[0]?.message || 'Error desconocido');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+  }, []);
+
+  return { movies, loading, error };
+};
+```
+
+## Validaciones
+
+### Validación de Password (Backend)
+
+El backend requiere:
+- Mínimo 6 caracteres
+- Al menos 1 letra minúscula
+- Al menos 1 letra mayúscula
+- Al menos 1 símbolo especial
+
+**Ejemplo válido:** `Password123!`
+
+### Validación de Email
+
+```tsx
+const validateEmail = (email: string): boolean => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+```
+
+## Path Aliases
+
+Usar siempre path aliases en lugar de rutas relativas:
+
+```tsx
+// ✅ Correcto
+import { MovieCard } from '@/components/movies/MovieCard';
+import { useMovies } from '@/hooks/useMovies';
+import type { Movie } from '@/types/movie.types';
+
+// ❌ Incorrecto
+import { MovieCard } from '../../../components/movies/MovieCard';
+```
+
+**Configuración en tsconfig.json:**
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+## Accesibilidad
+
+- Usar elementos semánticos HTML (`<nav>`, `<main>`, `<article>`)
+- Agregar `aria-label` a botones sin texto
+- Implementar navegación por teclado
+- Contraste mínimo 4.5:1 para texto
+- Focus visible en elementos interactivos
+
+```tsx
+<button
+  aria-label="Agregar a favoritos"
+  className="focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+  <HeartIcon />
+</button>
+```
+
+## Performance
+
+- Lazy loading de imágenes: usar `loading="lazy"`
+- Code splitting: usar `React.lazy()` para rutas
+- Memoización: usar `React.memo()` para componentes pesados
+- Debounce: usar `useDebounce` para búsquedas
+- Virtualización: considerar para listas largas
+
+```tsx
+// Lazy loading de rutas
+const MovieDetails = React.lazy(() => import('@/pages/MovieDetails'));
+
+// En el router
+<Suspense fallback={<Loading />}>
+  <MovieDetails />
+</Suspense>
+```
+
+## Formato de Código
+
+### Nombres de Archivos
+
+- Componentes: `PascalCase.tsx` (ej: `MovieCard.tsx`)
+- Hooks: `camelCase.ts` con prefijo `use` (ej: `useMovies.ts`)
+- Servicios: `camelCase.service.ts` (ej: `movies.service.ts`)
+- Tipos: `camelCase.types.ts` (ej: `movie.types.ts`)
+
+### Nombres de Variables y Funciones
+
+- Componentes: `PascalCase`
+- Funciones/hooks: `camelCase`
+- Constantes: `UPPER_SNAKE_CASE`
+- Tipos/interfaces: `PascalCase`
+
+## Testing (Opcional pero Recomendado)
+
+```tsx
+// Component.test.tsx
+import { render, screen } from '@testing-library/react';
+import { MovieCard } from './MovieCard';
+
+describe('MovieCard', () => {
+  it('renders movie title', () => {
+    render(<MovieCard movie={mockMovie} />);
+    expect(screen.getByText(mockMovie.title)).toBeInTheDocument();
+  });
+});
+```
+
+## Checklist de Desarrollo
+
+Al crear un nuevo componente/feature:
+
+- [ ] Tipos TypeScript definidos correctamente
+- [ ] Componente responsive en todos los breakpoints
+- [ ] Estados de loading implementados (skeleton)
+- [ ] Estados de error manejados
+- [ ] Estados vacíos considerados
+- [ ] Animaciones suaves (200-300ms)
+- [ ] Accesibilidad (ARIA labels, keyboard nav)
+- [ ] Path aliases usados (`@/`)
+- [ ] Servicios API usan el `api.ts` configurado
+- [ ] Manejo de errores consistente
+- [ ] Validaciones del lado del cliente coinciden con backend
+- [ ] Consistencia con paleta de colores
+- [ ] Hover states definidos
+- [ ] Focus states visibles
+
+## Referencias Importantes
+
+### Documentación del Backend
+
+- `CONFIGURACION_FRONTEND_BACKEND.md` - Configuración compartida y tipos
+- `INFORMACION_BACKEND.md` - Documentación completa del backend
+- `INFORMACION_LOGIN_FRONTEND.md` - Guía de autenticación
+
+### Skills Disponibles
+
+- `movie-app-features` - Patrones de implementación de features
+- `movie-app-design` - Guías de diseño y estilos
+- `movie-app-setup` - Configuración inicial del proyecto
+- `movie-app-backend-integration` - Integración con backend
+- `fullstack-feature` - Desarrollo coordinado de features FE+BE simultáneamente
+
+### Subagents
+
+- `backend-frontend-bridge` - Sincronización entre backend y frontend
+- `fullstack-feature` - Crea páginas FE y endpoints BE coordinadamente
+
+## Comandos Útiles
+
+```bash
+# Desarrollo
+npm run dev
+
+# Build
+npm run build
+
+# Preview build
+npm run preview
+
+# Lint
+npm run lint
+```
+
+## Notas Importantes
+
+1. **CORS**: El backend tiene CORS habilitado, no hay problemas de CORS
+2. **Token Expiration**: Los tokens expiran en 1 hora, manejar redirección al login
+3. **Error Format**: Todos los errores del backend siguen `{ errors: [...] }`
+4. **Pagination**: Los endpoints de búsqueda usan paginación
+5. **Validation**: Las validaciones del frontend deben coincidir con el backend
