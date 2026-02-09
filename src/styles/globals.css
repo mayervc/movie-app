@@ -16,4 +16,38 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Scrollbar estilizado para contenedores de la app */
+  .scrollbar-styled {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+  }
+  .scrollbar-styled::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-styled::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 999px;
+    margin: 4px;
+  }
+  .scrollbar-styled::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      180deg,
+      rgba(59, 130, 246, 0.25),
+      rgba(139, 92, 246, 0.25)
+    );
+    border-radius: 999px;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+  }
+  .scrollbar-styled::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      180deg,
+      rgba(59, 130, 246, 0.45),
+      rgba(139, 92, 246, 0.45)
+    );
+  }
+  .scrollbar-styled::-webkit-scrollbar-corner {
+    background: transparent;
+  }
 }

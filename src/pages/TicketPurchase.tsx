@@ -8,6 +8,7 @@ import { useTicketPurchase } from "@/hooks/useTicketPurchase";
 import type { Movie } from "@/types/movie.types";
 
 import { StepIndicator } from "@/components/tickets/StepIndicator";
+import { CinemaSelector } from "@/components/tickets/CinemaSelector";
 import { ShowtimeSelector } from "@/components/tickets/ShowtimeSelector";
 import { SeatSelector } from "@/components/tickets/SeatSelector";
 import { PurchaseSummary } from "@/components/tickets/PurchaseSummary";
@@ -25,6 +26,14 @@ export const TicketPurchase = () => {
   // Hook de compra
   const {
     step,
+
+    // Cinema
+    cinemas,
+    loadingCinemas,
+    cinemasError,
+    selectedCinema,
+
+    // Showtime
     selectedDate,
     showtimeResults,
     loadingShowtimes,
@@ -32,11 +41,20 @@ export const TicketPurchase = () => {
     selectedShowtime,
     selectedRoomName,
     showtimeDetails,
+    roomData,
     loadingDetails,
+
+    // Seats
     selectedSeats,
+
+    // Purchase
     purchasing,
     purchaseError,
     purchaseResult,
+
+    // Acciones
+    searchCinemas,
+    selectCinema,
     searchShowtimes,
     selectShowtime,
     toggleSeat,
@@ -212,28 +230,44 @@ export const TicketPurchase = () => {
             {/* Card con glass morphism */}
             <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/40 rounded-3xl p-5 sm:p-8 shadow-2xl shadow-black/20">
               <AnimatePresence mode="wait">
-                {/* Step 1: Selección de horario */}
-                {step === "showtime" && (
+                {/* Step 1: Selección de cine */}
+                {step === "cinema" && (
+                  <CinemaSelector
+                    key="cinema"
+                    cinemas={cinemas}
+                    loading={loadingCinemas}
+                    error={cinemasError}
+                    onSearch={searchCinemas}
+                    onSelect={selectCinema}
+                  />
+                )}
+
+                {/* Step 2: Selección de horario */}
+                {step === "showtime" && selectedCinema && (
                   <ShowtimeSelector
                     key="showtime"
                     showtimeResults={showtimeResults}
                     loading={loadingShowtimes}
                     error={showtimesError}
                     selectedDate={selectedDate}
+                    cinemaName={selectedCinema.name}
                     onDateSelect={searchShowtimes}
                     onShowtimeSelect={selectShowtime}
+                    onBack={() => goToStep("cinema")}
                   />
                 )}
 
-                {/* Step 2: Selección de asientos */}
+                {/* Step 3: Selección de asientos */}
                 {step === "seats" &&
                   showtimeDetails &&
-                  selectedShowtime && (
+                  selectedShowtime &&
+                  roomData && (
                     <SeatSelector
                       key="seats"
                       showtimeDetails={showtimeDetails}
                       selectedShowtime={selectedShowtime}
                       roomName={selectedRoomName}
+                      roomData={roomData}
                       selectedSeats={selectedSeats}
                       loadingDetails={loadingDetails}
                       onToggleSeat={toggleSeat}
@@ -242,17 +276,19 @@ export const TicketPurchase = () => {
                     />
                   )}
 
-                {/* Step 3: Resumen y confirmación */}
+                {/* Step 4: Resumen y confirmación */}
                 {step === "confirm" &&
-                  selectedShowtime && (
+                  selectedShowtime &&
+                  selectedCinema && (
                     <PurchaseSummary
                       key="confirm"
                       movie={movie}
                       selectedShowtime={selectedShowtime}
+                      cinemaName={selectedCinema.name}
                       roomName={selectedRoomName}
                       selectedDate={selectedDate}
                       selectedSeats={selectedSeats}
-                      totalSeats={showtimeDetails?.room_seats || 50}
+                      roomData={roomData}
                       purchasing={purchasing}
                       error={purchaseError}
                       onBack={() => goToStep("seats")}
@@ -260,7 +296,7 @@ export const TicketPurchase = () => {
                     />
                   )}
 
-                {/* Step 4: Confirmación exitosa */}
+                {/* Step 5: Confirmación exitosa */}
                 {step === "success" && purchaseResult && (
                   <TicketConfirmation
                     key="success"
