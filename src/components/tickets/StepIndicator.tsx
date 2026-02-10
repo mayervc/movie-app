@@ -1,5 +1,11 @@
 import { motion } from "framer-motion";
-import { Ticket, Armchair, ShieldCheck, PartyPopper } from "lucide-react";
+import {
+  Building2,
+  Ticket,
+  Armchair,
+  ShieldCheck,
+  PartyPopper,
+} from "lucide-react";
 import type { PurchaseStep } from "@/hooks/useTicketPurchase";
 
 interface StepIndicatorProps {
@@ -7,6 +13,7 @@ interface StepIndicatorProps {
 }
 
 const STEPS = [
+  { key: "cinema" as PurchaseStep, label: "Cine", icon: Building2 },
   { key: "showtime" as PurchaseStep, label: "Horario", icon: Ticket },
   { key: "seats" as PurchaseStep, label: "Asientos", icon: Armchair },
   { key: "confirm" as PurchaseStep, label: "Confirmar", icon: ShieldCheck },
@@ -20,7 +27,7 @@ export const StepIndicator = ({ currentStep }: StepIndicatorProps) => {
   const currentIdx = stepIndex(currentStep);
 
   return (
-    <div className="flex items-center justify-center gap-1 sm:gap-2">
+    <div className="flex items-center justify-center gap-0.5 sm:gap-1">
       {STEPS.map((step, idx) => {
         const isActive = idx === currentIdx;
         const isCompleted = idx < currentIdx;
@@ -39,7 +46,7 @@ export const StepIndicator = ({ currentStep }: StepIndicatorProps) => {
             >
               <div
                 className={`
-                  relative flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl transition-all duration-300
+                  relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl transition-all duration-300
                   ${
                     isActive
                       ? "bg-gradient-to-br from-blue-500 to-violet-600 shadow-lg shadow-blue-500/30"
@@ -57,14 +64,14 @@ export const StepIndicator = ({ currentStep }: StepIndicatorProps) => {
                   />
                 )}
                 <Icon
-                  size={18}
+                  size={16}
                   className={`relative z-10 ${
                     isActive || isCompleted ? "text-white" : "text-slate-500"
                   }`}
                 />
               </div>
               <span
-                className={`mt-1.5 text-[10px] sm:text-xs font-medium transition-colors ${
+                className={`mt-1 text-[9px] sm:text-[11px] font-medium transition-colors ${
                   isActive
                     ? "text-blue-400"
                     : isCompleted
@@ -78,7 +85,7 @@ export const StepIndicator = ({ currentStep }: StepIndicatorProps) => {
 
             {/* Connector line */}
             {idx < STEPS.length - 1 && (
-              <div className="w-6 sm:w-10 md:w-14 h-[2px] mx-1 sm:mx-2 relative mt-[-12px] sm:mt-[-14px]">
+              <div className="w-4 sm:w-7 md:w-10 h-[2px] mx-0.5 sm:mx-1.5 relative mt-[-10px] sm:mt-[-12px]">
                 <div className="absolute inset-0 bg-slate-700/50 rounded-full" />
                 <motion.div
                   initial={{ scaleX: 0 }}

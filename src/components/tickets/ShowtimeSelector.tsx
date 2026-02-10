@@ -9,6 +9,8 @@ import {
   ChevronRight,
   Loader2,
   AlertCircle,
+  ArrowLeft,
+  Building2,
 } from "lucide-react";
 import { format, addDays } from "date-fns";
 import { es } from "date-fns/locale";
@@ -22,8 +24,10 @@ interface ShowtimeSelectorProps {
   loading: boolean;
   error: string | null;
   selectedDate: string;
+  cinemaName: string;
   onDateSelect: (date: string) => void;
   onShowtimeSelect: (showtime: ShowtimeItem, roomName: string) => void;
+  onBack: () => void;
 }
 
 export const ShowtimeSelector = ({
@@ -31,8 +35,10 @@ export const ShowtimeSelector = ({
   loading,
   error,
   selectedDate,
+  cinemaName,
   onDateSelect,
   onShowtimeSelect,
+  onBack,
 }: ShowtimeSelectorProps) => {
   const [hoveredShowtime, setHoveredShowtime] = useState<number | null>(null);
 
@@ -63,8 +69,14 @@ export const ShowtimeSelector = ({
       transition={{ duration: 0.4 }}
       className="space-y-6"
     >
-      {/* Título */}
+      {/* Cinema badge + Título */}
       <div className="text-center">
+        {/* Badge del cine seleccionado */}
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full mb-4">
+          <Building2 size={14} className="text-blue-400" />
+          <span className="text-blue-300 text-xs font-medium">{cinemaName}</span>
+        </div>
+
         <h2 className="text-xl sm:text-2xl font-bold text-slate-50 mb-2">
           Elige fecha y horario
         </h2>
@@ -245,6 +257,19 @@ export const ShowtimeSelector = ({
           )}
         </AnimatePresence>
       )}
+
+      {/* Botón cambiar cine */}
+      <div className="pt-2">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onBack}
+          className="w-full flex items-center justify-center gap-2 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-slate-600/50 rounded-xl text-slate-400 hover:text-slate-50 font-medium transition-all duration-300"
+        >
+          <ArrowLeft size={16} />
+          <span className="text-sm">Cambiar cine</span>
+        </motion.button>
+      </div>
     </motion.div>
   );
 };

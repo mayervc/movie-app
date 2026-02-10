@@ -8,17 +8,20 @@ import {
   Loader2,
   AlertCircle,
   ShieldCheck,
+  Building2,
 } from "lucide-react";
 import type { ShowtimeItem } from "@/types/showtime.types";
 import type { Movie } from "@/types/movie.types";
+import type { RoomWithSeats, RoomSeat } from "@/types/room.types";
 
 interface PurchaseSummaryProps {
   movie: Movie;
   selectedShowtime: ShowtimeItem;
+  cinemaName: string;
   roomName: string;
   selectedDate: string;
   selectedSeats: number[];
-  totalSeats: number;
+  roomData: RoomWithSeats | null;
   purchasing: boolean;
   error: string | null;
   onBack: () => void;
@@ -28,22 +31,32 @@ interface PurchaseSummaryProps {
 export const PurchaseSummary = ({
   movie,
   selectedShowtime,
+  cinemaName,
   roomName,
   selectedDate,
   selectedSeats,
-  totalSeats,
+  roomData,
   purchasing,
   error,
   onBack,
   onConfirm,
 }: PurchaseSummaryProps) => {
   const totalPrice = selectedSeats.length * selectedShowtime.ticket_price;
-  const seatsPerRow = totalSeats <= 30 ? 6 : totalSeats <= 60 ? 8 : 10;
+
+  // Construir mapa de id → seat para labels reales
+  const seatMap = new Map<number, RoomSeat>();
+  if (roomData?.blocks) {
+    for (const block of roomData.blocks) {
+      for (const seat of block.seats) {
+        seatMap.set(seat.id, seat);
+      }
+    }
+  }
 
   const getSeatLabel = (id: number) => {
-    const rowIdx = Math.floor((id - 1) / seatsPerRow);
-    const colNum = ((id - 1) % seatsPerRow) + 1;
-    return `${String.fromCharCode(65 + rowIdx)}${colNum}`;
+    const seat = seatMap.get(id);
+    if (seat) return `${seat.seatRowLabel}${seat.seatColumnLabel}`;
+    return `#${id}`;
   };
 
   const formatSelectedDate = (dateStr: string) => {
@@ -115,6 +128,18 @@ export const PurchaseSummary = ({
 
         {/* Detalles */}
         <div className="p-4 sm:p-5 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
+              <Building2 size={16} className="text-indigo-400" />
+            </div>
+            <div>
+              <p className="text-slate-500 text-xs">Cine</p>
+              <p className="text-slate-200 text-sm font-medium">
+                {cinemaName}
+              </p>
+            </div>
+          </div>
+
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
               <Calendar size={16} className="text-blue-400" />

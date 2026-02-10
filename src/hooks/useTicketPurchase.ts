@@ -1,18 +1,36 @@
 import { useState, useCallback } from "react";
+import { cinemasService } from "@/services/cinemas.service";
 import { showtimesService } from "@/services/showtimes.service";
+import { roomsService } from "@/services/rooms.service";
 import { ticketsService } from "@/services/tickets.service";
+import type { Cinema } from "@/types/cinema.types";
 import type {
   ShowtimeSearchResult,
   ShowtimeDetails,
   ShowtimeItem,
 } from "@/types/showtime.types";
+import type { RoomWithSeats } from "@/types/room.types";
 import type { TicketPurchaseResponse } from "@/types/ticket.types";
 
-export type PurchaseStep = "showtime" | "seats" | "confirm" | "success";
+export type PurchaseStep =
+  | "cinema"
+  | "showtime"
+  | "seats"
+  | "confirm"
+  | "success";
 
 export const useTicketPurchase = (movieId: number) => {
   // Estado del flujo
-  const [step, setStep] = useState<PurchaseStep>("showtime");
+  const [step, setStep] = useState<PurchaseStep>("cinema");
+
+  // Cinema
+  const [cinemas, setCinemas] = useState<Cinema[]>([]);
+  const [loadingCinemas, setLoadingCinemas] = useState(false);
+  const [cinemasError, setCinemasError] = useState<string | null>(null);
+  const [selectedCinema, setSelectedCinema] = useState<Cinema | null>(null);
+  const [cinemaSearchQuery, setCinemaSearchQuery] = useState("");
+
+  // Fecha
   const [selectedDate, setSelectedDate] = useState<string>("");
 
   // Datos de showtimes
@@ -28,6 +46,7 @@ export const useTicketPurchase = (movieId: number) => {
   const [selectedRoomName, setSelectedRoomName] = useState<string>("");
   const [showtimeDetails, setShowtimeDetails] =
     useState<ShowtimeDetails | null>(null);
+  const [roomData, setRoomData] = useState<RoomWithSeats | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
 
   // Asientos seleccionados
@@ -39,15 +58,56 @@ export const useTicketPurchase = (movieId: number) => {
   const [purchaseResult, setPurchaseResult] =
     useState<TicketPurchaseResponse | null>(null);
 
-  // Buscar showtimes por fecha
+  // Buscar cinemas
+  const searchCinemas = useCallback(async (query?: string) => {
+    try {
+      setLoadingCinemas(true);
+      setCinemasError(null);
+      const params: { page: number; limit: number; name?: string } = {
+        page: 1,
+        limit: 50,
+      };
+      if (query && query.trim()) {
+        params.name = query.trim();
+      }
+      const response = await cinemasService.search(params);
+      setCinemas(response.cinemas);
+    } catch (err: any) {
+      const errors = err.response?.data?.errors;
+      const message = Array.isArray(errors)
+        ? typeof errors[0] === "string"
+          ? errors[0]
+          : errors[0]?.message
+        : "Error al buscar cines";
+      setCinemasError(message);
+    } finally {
+      setLoadingCinemas(false);
+    }
+  }, []);
+
+  // Seleccionar cinema
+  const selectCinema = useCallback((cinema: Cinema) => {
+    setSelectedCinema(cinema);
+    setSelectedDate("");
+    setShowtimeResults([]);
+    setSelectedShowtime(null);
+    setSelectedRoomName("");
+    setShowtimeDetails(null);
+    setSelectedSeats([]);
+    setStep("showtime");
+  }, []);
+
+  // Buscar showtimes por fecha y cinema
   const searchShowtimes = useCallback(
     async (date: string) => {
+      if (!selectedCinema) return;
       try {
         setLoadingShowtimes(true);
         setShowtimesError(null);
         setSelectedDate(date);
         const results = await showtimesService.search({
           movie_id: movieId,
+          cinema_id: selectedCinema.id,
           date,
         });
         setShowtimeResults(results);
@@ -63,10 +123,10 @@ export const useTicketPurchase = (movieId: number) => {
         setLoadingShowtimes(false);
       }
     },
-    [movieId]
+    [movieId, selectedCinema]
   );
 
-  // Seleccionar un showtime y obtener detalles
+  // Seleccionar un showtime y obtener detalles + asientos de la sala
   const selectShowtime = useCallback(
     async (showtime: ShowtimeItem, roomName: string) => {
       try {
@@ -74,8 +134,16 @@ export const useTicketPurchase = (movieId: number) => {
         setSelectedRoomName(roomName);
         setLoadingDetails(true);
         setSelectedSeats([]);
-        const details = await showtimesService.getById(showtime.id);
+        setRoomData(null);
+
+        // Cargar detalles del showtime y asientos de la sala en paralelo
+        const [details, room] = await Promise.all([
+          showtimesService.getById(showtime.id),
+          roomsService.getWithSeats(showtime.room_id),
+        ]);
+
         setShowtimeDetails(details);
+        setRoomData(room);
         setStep("seats");
       } catch (err: any) {
         const errors = err.response?.data?.errors;
@@ -140,10 +208,23 @@ export const useTicketPurchase = (movieId: number) => {
   // Navegar entre pasos
   const goToStep = useCallback((newStep: PurchaseStep) => {
     setStep(newStep);
+    if (newStep === "cinema") {
+      setSelectedCinema(null);
+      setSelectedDate("");
+      setShowtimeResults([]);
+      setSelectedShowtime(null);
+      setSelectedRoomName("");
+      setShowtimeDetails(null);
+      setRoomData(null);
+      setSelectedSeats([]);
+      setPurchaseError(null);
+      setShowtimesError(null);
+    }
     if (newStep === "showtime") {
       setSelectedShowtime(null);
       setSelectedRoomName("");
       setShowtimeDetails(null);
+      setRoomData(null);
       setSelectedSeats([]);
       setPurchaseError(null);
     }
@@ -155,12 +236,17 @@ export const useTicketPurchase = (movieId: number) => {
 
   // Resetear todo
   const reset = useCallback(() => {
-    setStep("showtime");
+    setStep("cinema");
+    setCinemas([]);
+    setSelectedCinema(null);
+    setCinemaSearchQuery("");
+    setCinemasError(null);
     setSelectedDate("");
     setShowtimeResults([]);
     setSelectedShowtime(null);
     setSelectedRoomName("");
     setShowtimeDetails(null);
+    setRoomData(null);
     setSelectedSeats([]);
     setPurchaseResult(null);
     setPurchaseError(null);
@@ -170,6 +256,15 @@ export const useTicketPurchase = (movieId: number) => {
   return {
     // Estado
     step,
+
+    // Cinema
+    cinemas,
+    loadingCinemas,
+    cinemasError,
+    selectedCinema,
+    cinemaSearchQuery,
+
+    // Showtime
     selectedDate,
     showtimeResults,
     loadingShowtimes,
@@ -177,13 +272,21 @@ export const useTicketPurchase = (movieId: number) => {
     selectedShowtime,
     selectedRoomName,
     showtimeDetails,
+    roomData,
     loadingDetails,
+
+    // Seats
     selectedSeats,
+
+    // Purchase
     purchasing,
     purchaseError,
     purchaseResult,
 
     // Acciones
+    searchCinemas,
+    selectCinema,
+    setCinemaSearchQuery,
     searchShowtimes,
     selectShowtime,
     toggleSeat,
