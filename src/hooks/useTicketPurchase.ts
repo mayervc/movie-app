@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { cinemasService } from "@/services/cinemas.service";
 import { showtimesService } from "@/services/showtimes.service";
 import { roomsService } from "@/services/rooms.service";
-import { ticketsService } from "@/services/tickets.service";
+import { paymentsService } from "@/services/payments.service";
 import type { Cinema } from "@/types/cinema.types";
 import type {
   ShowtimeSearchResult,
@@ -10,14 +10,8 @@ import type {
   ShowtimeItem,
 } from "@/types/showtime.types";
 import type { RoomWithSeats } from "@/types/room.types";
-import type { TicketPurchaseResponse } from "@/types/ticket.types";
 
-export type PurchaseStep =
-  | "cinema"
-  | "showtime"
-  | "seats"
-  | "confirm"
-  | "success";
+export type PurchaseStep = "cinema" | "showtime" | "seats" | "confirm";
 
 export const useTicketPurchase = (movieId: number) => {
   // Estado del flujo
@@ -55,8 +49,6 @@ export const useTicketPurchase = (movieId: number) => {
   // Compra
   const [purchasing, setPurchasing] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
-  const [purchaseResult, setPurchaseResult] =
-    useState<TicketPurchaseResponse | null>(null);
 
   // Buscar cinemas
   const searchCinemas = useCallback(async (query?: string) => {
@@ -174,19 +166,27 @@ export const useTicketPurchase = (movieId: number) => {
     [showtimeDetails]
   );
 
-  // Confirmar compra
+  // Confirmar compra: crea sesión Stripe y redirige al checkout
   const confirmPurchase = useCallback(async () => {
     if (!selectedShowtime || selectedSeats.length === 0) return;
 
     try {
       setPurchasing(true);
       setPurchaseError(null);
-      const result = await ticketsService.purchase(
+      const { url } = await paymentsService.createCheckoutSession(
         selectedShowtime.id,
-        selectedSeats
+        selectedSeats,
+        movieId
       );
-      setPurchaseResult(result);
-      setStep("success");
+      sessionStorage.setItem(
+        "ticket_purchase_movie_id",
+        String(movieId)
+      );
+      sessionStorage.setItem(
+        "ticket_purchase_selected_date",
+        selectedDate || ""
+      );
+      window.location.href = url;
     } catch (err: any) {
       const errors = err.response?.data?.errors;
       let message: string;
@@ -197,13 +197,13 @@ export const useTicketPurchase = (movieId: number) => {
           )
           .join(". ");
       } else {
-        message = "Error al comprar tickets";
+        message = "Error al iniciar el pago. Intenta de nuevo.";
       }
       setPurchaseError(message);
     } finally {
       setPurchasing(false);
     }
-  }, [selectedShowtime, selectedSeats]);
+  }, [movieId, selectedShowtime, selectedSeats, selectedDate]);
 
   // Navegar entre pasos
   const goToStep = useCallback((newStep: PurchaseStep) => {
@@ -248,7 +248,6 @@ export const useTicketPurchase = (movieId: number) => {
     setShowtimeDetails(null);
     setRoomData(null);
     setSelectedSeats([]);
-    setPurchaseResult(null);
     setPurchaseError(null);
     setShowtimesError(null);
   }, []);
@@ -281,7 +280,6 @@ export const useTicketPurchase = (movieId: number) => {
     // Purchase
     purchasing,
     purchaseError,
-    purchaseResult,
 
     // Acciones
     searchCinemas,

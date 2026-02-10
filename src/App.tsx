@@ -7,6 +7,8 @@ import { MovieDetails } from "@/pages/MovieDetails";
 import { Favorites } from "@/pages/Favorites";
 import { Login } from "@/pages/Login";
 import { TicketPurchase } from "@/pages/TicketPurchase";
+import { TicketPurchaseSuccess } from "@/pages/TicketPurchaseSuccess";
+import { TicketPurchaseCancel } from "@/pages/TicketPurchaseCancel";
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -105,6 +107,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <TicketPurchase />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/movie/:id/tickets/success"
+        element={
+          <ProtectedRoute>
+            <TicketPurchaseSuccess />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/movie/:id/tickets/cancel"
+        element={
+          <ProtectedRoute>
+            <TicketPurchaseCancel />
           </ProtectedRoute>
         }
       />

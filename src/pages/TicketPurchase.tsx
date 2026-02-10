@@ -12,7 +12,6 @@ import { CinemaSelector } from "@/components/tickets/CinemaSelector";
 import { ShowtimeSelector } from "@/components/tickets/ShowtimeSelector";
 import { SeatSelector } from "@/components/tickets/SeatSelector";
 import { PurchaseSummary } from "@/components/tickets/PurchaseSummary";
-import { TicketConfirmation } from "@/components/tickets/TicketConfirmation";
 
 export const TicketPurchase = () => {
   const { id } = useParams<{ id: string }>();
@@ -50,7 +49,6 @@ export const TicketPurchase = () => {
     // Purchase
     purchasing,
     purchaseError,
-    purchaseResult,
 
     // Acciones
     searchCinemas,
@@ -61,7 +59,6 @@ export const TicketPurchase = () => {
     confirmPurchase,
     goToStep,
     setStep,
-    reset,
   } = useTicketPurchase(movieId);
 
   // Cargar película
@@ -296,15 +293,6 @@ export const TicketPurchase = () => {
                     />
                   )}
 
-                {/* Step 5: Confirmación exitosa */}
-                {step === "success" && purchaseResult && (
-                  <TicketConfirmation
-                    key="success"
-                    purchaseResult={purchaseResult}
-                    selectedDate={selectedDate}
-                    onNewPurchase={reset}
-                  />
-                )}
               </AnimatePresence>
             </div>
           </motion.div>

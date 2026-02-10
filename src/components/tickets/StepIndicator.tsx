@@ -4,7 +4,6 @@ import {
   Ticket,
   Armchair,
   ShieldCheck,
-  PartyPopper,
 } from "lucide-react";
 import type { PurchaseStep } from "@/hooks/useTicketPurchase";
 
@@ -17,7 +16,6 @@ const STEPS = [
   { key: "showtime" as PurchaseStep, label: "Horario", icon: Ticket },
   { key: "seats" as PurchaseStep, label: "Asientos", icon: Armchair },
   { key: "confirm" as PurchaseStep, label: "Confirmar", icon: ShieldCheck },
-  { key: "success" as PurchaseStep, label: "Listo", icon: PartyPopper },
 ];
 
 const stepIndex = (step: PurchaseStep) =>
