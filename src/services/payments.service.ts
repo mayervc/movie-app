@@ -9,16 +9,21 @@ export const paymentsService = {
   /**
    * Crea una sesión de Stripe Checkout. El backend devuelve la URL
    * a la que redirigir al usuario. Requiere auth.
+   *
+   * Se envía el customer_email para que Stripe envíe el recibo/factura
+   * automáticamente al completar el pago.
    */
   createCheckoutSession: async (
     showtimeId: number,
     seatIds: number[],
-    movieId?: number
+    movieId?: number,
+    customerEmail?: string
   ): Promise<CreateCheckoutSessionResponse> => {
     const body: CreateCheckoutSessionRequest = {
       showtime_id: showtimeId,
       seat_ids: seatIds,
       ...(movieId != null && { movie_id: movieId }),
+      ...(customerEmail && { customer_email: customerEmail }),
     };
     const { data } = await api.post<CreateCheckoutSessionResponse>(
       "/payments/create-checkout-session",

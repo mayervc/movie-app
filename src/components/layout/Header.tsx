@@ -65,18 +65,11 @@ export const Header = () => {
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="flex items-center gap-3 px-3 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 transition-all duration-200"
+                aria-label="Menú de usuario"
               >
-                {user?.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={user.firstName || user.email}
-                    className="w-8 h-8 rounded-lg object-cover"
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-                    <User size={16} className="text-white" />
-                  </div>
-                )}
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
+                  <User size={16} className="text-white" />
+                </div>
                 <span className="text-slate-300 text-sm font-medium max-w-[100px] truncate">
                   {user?.firstName || user?.email?.split("@")[0] || "Usuario"}
                 </span>
@@ -95,20 +88,14 @@ export const Header = () => {
                     {/* User Info */}
                     <div className="p-4 border-b border-slate-700/50">
                       <div className="flex items-center gap-3">
-                        {user?.avatar ? (
-                          <img
-                            src={user.avatar}
-                            alt={user.name}
-                            className="w-12 h-12 rounded-xl object-cover"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-                            <User size={24} className="text-white" />
-                          </div>
-                        )}
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
+                          <User size={24} className="text-white" />
+                        </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-slate-50 font-medium truncate">
-                            {user?.name}
+                            {user?.firstName && user?.lastName
+                              ? `${user.firstName} ${user.lastName}`
+                              : user?.firstName || user?.email?.split("@")[0] || "Usuario"}
                           </p>
                           <p className="text-slate-400 text-sm truncate">
                             {user?.email}
@@ -158,17 +145,9 @@ export const Header = () => {
             >
               {/* User Info Mobile */}
               <div className="flex items-center gap-3 mb-4 p-3 bg-slate-800/50 rounded-xl">
-                {user?.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={user.firstName || user.email}
-                    className="w-10 h-10 rounded-lg object-cover"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-                    <User size={20} className="text-white" />
-                  </div>
-                )}
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
+                  <User size={20} className="text-white" />
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-slate-50 font-medium truncate">
                     {user?.firstName && user?.lastName

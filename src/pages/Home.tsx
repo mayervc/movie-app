@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { AlertCircle, RefreshCw } from "lucide-react";
 import { MovieGrid } from "@/components/movies/MovieGrid";
 import {
   getPopularMovies,
@@ -11,24 +12,32 @@ export const Home = () => {
   const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
   const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchMovies = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const [popular, topRated] = await Promise.all([
+        getPopularMovies(),
+        getTopRatedMovies(),
+      ]);
+      setPopularMovies(popular);
+      setTopRatedMovies(topRated);
+    } catch (err: any) {
+      const errors = err.response?.data?.errors;
+      const message = Array.isArray(errors)
+        ? typeof errors[0] === "string"
+          ? errors[0]
+          : errors[0]?.message
+        : "Error al cargar las películas";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        setLoading(true);
-        const [popular, topRated] = await Promise.all([
-          getPopularMovies(),
-          getTopRatedMovies(),
-        ]);
-        setPopularMovies(popular);
-        setTopRatedMovies(topRated);
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchMovies();
   }, []);
 
@@ -48,31 +57,70 @@ export const Home = () => {
         </div>
       </motion.section>
 
+      {/* Error State */}
+      {error && !loading && (
+        <section className="container mx-auto px-4 py-12">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center gap-4 p-6 bg-red-500/10 border border-red-500/30 rounded-xl max-w-lg mx-auto"
+          >
+            <AlertCircle className="w-8 h-8 text-red-400" />
+            <p className="text-red-400 text-sm text-center">{error}</p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={fetchMovies}
+              className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-300 text-sm transition-colors"
+            >
+              <RefreshCw size={16} />
+              Reintentar
+            </motion.button>
+          </motion.div>
+        </section>
+      )}
+
       {/* Popular Movies */}
-      <section className="container mx-auto px-4 py-12">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-3xl font-bold mb-8"
-        >
-          Películas Populares
-        </motion.h2>
-        <MovieGrid movies={popularMovies} loading={loading} />
-      </section>
+      {!error && (
+        <section className="container mx-auto px-4 py-12">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-3xl font-bold mb-8"
+          >
+            Películas Populares
+          </motion.h2>
+          {!loading && popularMovies.length === 0 ? (
+            <div className="text-center text-slate-400 py-12">
+              No se encontraron películas populares
+            </div>
+          ) : (
+            <MovieGrid movies={popularMovies} loading={loading} />
+          )}
+        </section>
+      )}
 
       {/* Top Rated Movies */}
-      <section className="container mx-auto px-4 py-12">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-3xl font-bold mb-8"
-        >
-          Mejor Valoradas
-        </motion.h2>
-        <MovieGrid movies={topRatedMovies} loading={loading} />
-      </section>
+      {!error && (
+        <section className="container mx-auto px-4 py-12">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-3xl font-bold mb-8"
+          >
+            Mejor Valoradas
+          </motion.h2>
+          {!loading && topRatedMovies.length === 0 ? (
+            <div className="text-center text-slate-400 py-12">
+              No se encontraron películas mejor valoradas
+            </div>
+          ) : (
+            <MovieGrid movies={topRatedMovies} loading={loading} />
+          )}
+        </section>
+      )}
     </div>
   );
 };

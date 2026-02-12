@@ -6,6 +6,7 @@ import { Home } from "@/pages/Home";
 import { MovieDetails } from "@/pages/MovieDetails";
 import { Favorites } from "@/pages/Favorites";
 import { Login } from "@/pages/Login";
+import { Register } from "@/pages/Register";
 import { TicketPurchase } from "@/pages/TicketPurchase";
 import { TicketPurchaseSuccess } from "@/pages/TicketPurchaseSuccess";
 import { TicketPurchaseCancel } from "@/pages/TicketPurchaseCancel";
@@ -61,12 +62,20 @@ const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
 function AppRoutes() {
   return (
     <Routes>
-      {/* Ruta pública - Login */}
+      {/* Rutas públicas - Login y Register */}
       <Route
         path="/login"
         element={
           <PublicRoute>
             <Login />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
           </PublicRoute>
         }
       />

@@ -34,6 +34,7 @@ export const MovieCard = ({ movie, viewMode = "grid" }: MovieCardProps) => {
         <img
           src={movie.poster}
           alt={movie.title}
+          loading="lazy"
           className="w-24 h-32 object-cover rounded"
         />
         <div className="flex-1">
@@ -47,7 +48,8 @@ export const MovieCard = ({ movie, viewMode = "grid" }: MovieCardProps) => {
         </div>
         <button
           onClick={handleFavoriteClick}
-          className={`p-2 rounded-full transition-colors ${
+          aria-label={favorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+          className={`p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
             favorite ? "text-red-500" : "text-slate-400 hover:text-red-500"
           }`}
         >
@@ -69,6 +71,7 @@ export const MovieCard = ({ movie, viewMode = "grid" }: MovieCardProps) => {
         <img
           src={movie.poster}
           alt={movie.title}
+          loading="lazy"
           className="w-full h-auto transition-transform duration-300 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -84,7 +87,8 @@ export const MovieCard = ({ movie, viewMode = "grid" }: MovieCardProps) => {
       </Link>
       <button
         onClick={handleFavoriteClick}
-        className={`absolute top-2 right-2 p-2 rounded-full bg-slate-900/80 backdrop-blur-sm transition-colors ${
+        aria-label={favorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+        className={`absolute top-2 right-2 p-2 rounded-full bg-slate-900/80 backdrop-blur-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
           favorite ? "text-red-500" : "text-slate-400 hover:text-red-500"
         }`}
       >

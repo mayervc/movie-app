@@ -51,7 +51,8 @@ export const MovieDetails = () => {
       <div className="relative h-[50vh] overflow-hidden">
         <img
           src={movie.backdrop}
-          alt={movie.title}
+          alt={`Fondo de ${movie.title}`}
+          loading="lazy"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
@@ -68,7 +69,8 @@ export const MovieDetails = () => {
           >
             <img
               src={movie.poster}
-              alt={movie.title}
+              alt={`Poster de ${movie.title}`}
+              loading="lazy"
               className="w-full rounded-lg shadow-2xl"
             />
           </motion.div>
@@ -103,7 +105,8 @@ export const MovieDetails = () => {
                 onClick={() =>
                   favorite ? removeFavorite(movie.id) : addFavorite(movie)
                 }
-                className={`p-3 rounded-full transition-colors ${
+                aria-label={favorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+                className={`p-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   favorite
                     ? "bg-red-500 text-white"
                     : "bg-slate-800 text-slate-400 hover:text-red-500"
@@ -141,6 +144,7 @@ export const MovieDetails = () => {
                         <img
                           src={actor.profilePath}
                           alt={actor.name}
+                          loading="lazy"
                           className="w-full rounded-lg mb-2"
                         />
                       )}

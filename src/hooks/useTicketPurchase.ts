@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { cinemasService } from "@/services/cinemas.service";
 import { showtimesService } from "@/services/showtimes.service";
 import { roomsService } from "@/services/rooms.service";
@@ -14,6 +15,8 @@ import type { RoomWithSeats } from "@/types/room.types";
 export type PurchaseStep = "cinema" | "showtime" | "seats" | "confirm";
 
 export const useTicketPurchase = (movieId: number) => {
+  const { user } = useAuth();
+
   // Estado del flujo
   const [step, setStep] = useState<PurchaseStep>("cinema");
 
@@ -176,7 +179,8 @@ export const useTicketPurchase = (movieId: number) => {
       const { url } = await paymentsService.createCheckoutSession(
         selectedShowtime.id,
         selectedSeats,
-        movieId
+        movieId,
+        user?.email ?? undefined
       );
       sessionStorage.setItem(
         "ticket_purchase_movie_id",
@@ -203,7 +207,7 @@ export const useTicketPurchase = (movieId: number) => {
     } finally {
       setPurchasing(false);
     }
-  }, [movieId, selectedShowtime, selectedSeats, selectedDate]);
+  }, [movieId, selectedShowtime, selectedSeats, selectedDate, user?.email]);
 
   // Navegar entre pasos
   const goToStep = useCallback((newStep: PurchaseStep) => {
