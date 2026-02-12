@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Film, Mail, Lock, Eye, EyeOff, Sparkles, Clapperboard } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -289,14 +289,16 @@ export const Login = () => {
           </div>
 
           {/* Registro link */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            type="button"
-            className="w-full py-4 bg-slate-700/30 hover:bg-slate-700/50 border border-slate-600/30 hover:border-slate-500/50 rounded-xl text-slate-300 hover:text-slate-50 font-medium transition-all duration-300"
-          >
-            Crear una cuenta
-          </motion.button>
+          <Link to="/register">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="button"
+              className="w-full py-4 bg-slate-700/30 hover:bg-slate-700/50 border border-slate-600/30 hover:border-slate-500/50 rounded-xl text-slate-300 hover:text-slate-50 font-medium transition-all duration-300"
+            >
+              Crear una cuenta
+            </motion.button>
+          </Link>
 
           {/* Footer */}
           <p className="text-center text-slate-500 text-xs mt-8">

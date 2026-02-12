@@ -25,12 +25,14 @@ export const MovieSearch = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar películas..."
+          aria-label="Buscar películas"
           className="w-full pl-12 pr-12 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
         />
         {query && (
           <button
             onClick={() => setQuery("")}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-50 transition-colors"
+            aria-label="Limpiar búsqueda"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
           >
             <X size={20} />
           </button>
@@ -49,6 +51,7 @@ export const MovieSearch = () => {
               <img
                 src={movie.poster}
                 alt={movie.title}
+                loading="lazy"
                 className="w-12 h-16 object-cover rounded"
               />
               <div className="flex-1">

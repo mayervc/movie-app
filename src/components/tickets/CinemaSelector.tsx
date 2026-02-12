@@ -10,6 +10,7 @@ import {
   AlertCircle,
   Clapperboard,
 } from "lucide-react";
+import { useDebounce } from "@/hooks/useDebounce";
 import type { Cinema } from "@/types/cinema.types";
 
 interface CinemaSelectorProps {
@@ -29,19 +30,17 @@ export const CinemaSelector = ({
 }: CinemaSelectorProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [hoveredCinema, setHoveredCinema] = useState<number | null>(null);
+  const debouncedQuery = useDebounce(searchQuery, 400);
 
   // Cargar cinemas al montar
   useEffect(() => {
     onSearch();
   }, []);
 
-  // Debounce para búsqueda
+  // Buscar cuando cambia el query (debounced)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onSearch(searchQuery || undefined);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+    onSearch(debouncedQuery || undefined);
+  }, [debouncedQuery]);
 
   return (
     <motion.div
@@ -77,6 +76,7 @@ export const CinemaSelector = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar cine por nombre..."
+            aria-label="Buscar cine por nombre"
             className="w-full pl-11 pr-4 py-3.5 bg-slate-900/50 border border-slate-600/50 rounded-xl text-slate-50 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:bg-slate-900/70 transition-all duration-300 text-sm"
           />
         </div>
