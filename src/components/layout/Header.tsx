@@ -1,14 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Film, Heart, Menu, LogOut, User } from "lucide-react";
+import { Film, Heart, Menu, LogOut, User, Crown } from "lucide-react";
 import { MovieSearch } from "@/components/movies/MovieSearch";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useSubscription } from "@/context/SubscriptionContext";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { isSubscribed, planName } = useSubscription();
   const navigate = useNavigate();
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -58,6 +60,23 @@ export const Header = () => {
             >
               <Heart size={20} />
               <span>Favoritos</span>
+            </Link>
+
+            <Link
+              to="/plans"
+              className={`flex items-center gap-2 transition-colors ${
+                isSubscribed
+                  ? "text-violet-400 hover:text-violet-300"
+                  : "text-slate-400 hover:text-violet-400"
+              }`}
+            >
+              <Crown size={20} />
+              <span>{isSubscribed ? planName : "Planes"}</span>
+              {isSubscribed && (
+                <span className="px-1.5 py-0.5 bg-violet-500/20 text-violet-300 text-[10px] rounded-full font-bold leading-none">
+                  PRO
+                </span>
+              )}
             </Link>
 
             {/* User Menu */}
@@ -167,6 +186,24 @@ export const Header = () => {
               >
                 <Heart size={20} />
                 <span>Favoritos</span>
+              </Link>
+
+              <Link
+                to="/plans"
+                className={`flex items-center gap-2 transition-colors py-2 ${
+                  isSubscribed
+                    ? "text-violet-400 hover:text-violet-300"
+                    : "text-slate-400 hover:text-violet-400"
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Crown size={20} />
+                <span>{isSubscribed ? planName : "Planes"}</span>
+                {isSubscribed && (
+                  <span className="px-1.5 py-0.5 bg-violet-500/20 text-violet-300 text-[10px] rounded-full font-bold leading-none">
+                    PRO
+                  </span>
+                )}
               </Link>
 
               <button

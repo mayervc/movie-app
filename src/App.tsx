@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
+import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { Header } from "@/components/layout/Header";
 import { Home } from "@/pages/Home";
 import { MovieDetails } from "@/pages/MovieDetails";
@@ -10,6 +11,9 @@ import { Register } from "@/pages/Register";
 import { TicketPurchase } from "@/pages/TicketPurchase";
 import { TicketPurchaseSuccess } from "@/pages/TicketPurchaseSuccess";
 import { TicketPurchaseCancel } from "@/pages/TicketPurchaseCancel";
+import { Plans } from "@/pages/Plans";
+import { SubscriptionSuccess } from "@/pages/SubscriptionSuccess";
+import { SubscriptionCancel } from "@/pages/SubscriptionCancel";
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -135,6 +139,32 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/plans"
+        element={
+          <ProtectedRoute>
+            <AuthenticatedLayout>
+              <Plans />
+            </AuthenticatedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/subscription/success"
+        element={
+          <ProtectedRoute>
+            <SubscriptionSuccess />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/subscription/cancel"
+        element={
+          <ProtectedRoute>
+            <SubscriptionCancel />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Redirigir rutas no encontradas al home */}
       <Route path="*" element={<Navigate to="/" replace />} />
@@ -145,11 +175,13 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <FavoritesProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </FavoritesProvider>
+      <SubscriptionProvider>
+        <FavoritesProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </FavoritesProvider>
+      </SubscriptionProvider>
     </AuthProvider>
   );
 }
