@@ -6,6 +6,7 @@ import type {
   ReactivateSubscriptionResponse,
   SubscriptionPlanSlug,
 } from "@/types/subscription.types";
+import type { SubscriptionPurchasesResponse } from "@/types/order.types";
 
 export const subscriptionsService = {
   /**
@@ -55,5 +56,24 @@ export const subscriptionsService = {
       "/subscriptions/reactivate"
     );
     return data;
+  },
+
+  /**
+   * Obtiene el historial de compras de planes (suscripciones) del usuario.
+   * Si el backend no expone el endpoint, devuelve lista vacía.
+   */
+  getSubscriptionPurchases: async (params?: {
+    page?: number;
+    limit?: number;
+  }): Promise<SubscriptionPurchasesResponse> => {
+    try {
+      const { data } = await api.get<SubscriptionPurchasesResponse>(
+        "/subscription-purchases",
+        { params }
+      );
+      return data;
+    } catch {
+      return { purchases: [] };
+    }
   },
 };

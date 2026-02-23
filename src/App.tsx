@@ -12,6 +12,7 @@ import { TicketPurchase } from "@/pages/TicketPurchase";
 import { TicketPurchaseSuccess } from "@/pages/TicketPurchaseSuccess";
 import { TicketPurchaseCancel } from "@/pages/TicketPurchaseCancel";
 import { Plans } from "@/pages/Plans";
+import { PurchaseHistory } from "@/pages/PurchaseHistory";
 import { SubscriptionSuccess } from "@/pages/SubscriptionSuccess";
 import { SubscriptionCancel } from "@/pages/SubscriptionCancel";
 
@@ -145,6 +146,16 @@ function AppRoutes() {
           <ProtectedRoute>
             <AuthenticatedLayout>
               <Plans />
+            </AuthenticatedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/purchases"
+        element={
+          <ProtectedRoute>
+            <AuthenticatedLayout>
+              <PurchaseHistory />
             </AuthenticatedLayout>
           </ProtectedRoute>
         }
