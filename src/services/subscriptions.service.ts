@@ -59,8 +59,8 @@ export const subscriptionsService = {
   },
 
   /**
-   * Obtiene el historial de compras de planes (suscripciones) del usuario.
-   * Si el backend no expone el endpoint, devuelve lista vacía.
+   * Obtiene el historial de compras de suscripción del usuario.
+   * Endpoint: GET /api/subscriptions (query: page, limit).
    */
   getSubscriptionPurchases: async (params?: {
     page?: number;
@@ -68,7 +68,7 @@ export const subscriptionsService = {
   }): Promise<SubscriptionPurchasesResponse> => {
     try {
       const { data } = await api.get<SubscriptionPurchasesResponse>(
-        "/subscription-purchases",
+        "/subscriptions",
         { params }
       );
       return data;

@@ -138,11 +138,11 @@ Cuando este endpoint esté implementado, el frontend consumirá `GET /api/orders
 
 ---
 
-## 6. Compras de planes (suscripciones)
+## 6. Historial de compras de suscripción
 
-Para mostrar también en el historial las **compras de planes de suscripción** (cuando el usuario se suscribió a Básico o Premium), el backend debe exponer un endpoint adicional. El frontend unificará órdenes de tickets y compras de planes en una sola lista ordenada por fecha.
+Para mostrar también en "Mis compras" las **compras de planes de suscripción**, el frontend usa **GET /api/subscriptions** (no usar `/api/subscription-purchases`; ese endpoint ya no existe). El frontend unifica órdenes de tickets y compras de suscripción en una sola lista ordenada por `created_at` descendente.
 
-### GET /api/subscription-purchases
+### GET /api/subscriptions
 
 Devuelve el historial de compras de suscripción del usuario: cada vez que se suscribió (o renovó) un plan, con plan, monto y fecha.
 
@@ -191,4 +191,4 @@ Devuelve el historial de compras de suscripción del usuario: cada vez que se su
 
 - **401** – No autenticado.
 
-El frontend combinará `GET /api/orders` y `GET /api/subscription-purchases`, merge por `created_at` descendente, y mostrará en la misma página tanto tickets como compras de planes, con distinto diseño por tipo (ticket vs suscripción).
+El frontend combina `GET /api/orders` y `GET /api/subscriptions`, ordena por `created_at` descendente y muestra en la misma página tanto tickets como compras de planes, con distinto diseño por tipo (ticket vs suscripción).
