@@ -9,10 +9,15 @@ import {
   AlertCircle,
   ShieldCheck,
   Building2,
+  Crown,
+  Ticket,
+  Sparkles,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import type { ShowtimeItem } from "@/types/showtime.types";
 import type { Movie } from "@/types/movie.types";
 import type { RoomWithSeats, RoomSeat } from "@/types/room.types";
+import { useSubscription } from "@/context/SubscriptionContext";
 
 interface PurchaseSummaryProps {
   movie: Movie;
@@ -41,7 +46,12 @@ export const PurchaseSummary = ({
   onBack,
   onConfirm,
 }: PurchaseSummaryProps) => {
-  const totalPrice = selectedSeats.length * selectedShowtime.ticket_price;
+  const { isSubscribed, planName, calculatePrice } = useSubscription();
+
+  const priceBreakdown = calculatePrice(
+    selectedShowtime.ticket_price,
+    selectedSeats.length
+  );
 
   // Construir mapa de id → seat para labels reales
   const seatMap = new Map<number, RoomSeat>();
@@ -217,13 +227,75 @@ export const PurchaseSummary = ({
               x{selectedSeats.length}
             </span>
           </div>
+
+          {/* Subtotal original */}
+          {isSubscribed && priceBreakdown.discountAmount > 0 && (
+            <>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-400">Subtotal</span>
+                <span className="text-slate-400 line-through">
+                  ${priceBreakdown.originalTotal.toFixed(2)}
+                </span>
+              </div>
+
+              {/* Tickets gratis aplicados */}
+              {priceBreakdown.freeTicketsApplied > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-1.5 text-emerald-400">
+                    <Ticket size={14} />
+                    Tickets gratis ({priceBreakdown.freeTicketsApplied})
+                  </span>
+                  <span className="text-emerald-400 font-medium">
+                    -${(priceBreakdown.freeTicketsApplied * selectedShowtime.ticket_price).toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              {/* Descuento de suscripción */}
+              {priceBreakdown.discountPercent > 0 && (selectedSeats.length - priceBreakdown.freeTicketsApplied) > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-1.5 text-violet-400">
+                    <Crown size={14} />
+                    Descuento {planName} ({priceBreakdown.discountPercent}%)
+                  </span>
+                  <span className="text-violet-400 font-medium">
+                    -${((selectedSeats.length - priceBreakdown.freeTicketsApplied) * selectedShowtime.ticket_price * priceBreakdown.discountPercent / 100).toFixed(2)}
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+
           <div className="h-px bg-slate-700/50 my-2" />
           <div className="flex items-center justify-between">
             <span className="text-slate-200 font-semibold">Total</span>
             <span className="text-emerald-400 font-bold text-xl">
-              ${totalPrice.toFixed(2)}
+              ${priceBreakdown.finalTotal.toFixed(2)}
             </span>
           </div>
+
+          {/* Banner de ahorro */}
+          {isSubscribed && priceBreakdown.discountAmount > 0 && (
+            <div className="flex items-center gap-2 mt-2 p-2.5 bg-violet-500/10 border border-violet-500/20 rounded-xl">
+              <Sparkles size={14} className="text-violet-400 flex-shrink-0" />
+              <span className="text-violet-300 text-xs font-medium">
+                Ahorras ${priceBreakdown.discountAmount.toFixed(2)} con tu plan {planName}
+              </span>
+            </div>
+          )}
+
+          {/* CTA para suscribirse si no está suscrito */}
+          {!isSubscribed && (
+            <Link
+              to="/plans"
+              className="flex items-center gap-2 mt-2 p-2.5 bg-slate-800/50 border border-slate-700/30 hover:border-violet-500/30 rounded-xl transition-all group"
+            >
+              <Crown size={14} className="text-slate-400 group-hover:text-violet-400 flex-shrink-0 transition-colors" />
+              <span className="text-slate-400 group-hover:text-slate-300 text-xs transition-colors">
+                Suscríbete y ahorra hasta 50% en tickets
+              </span>
+            </Link>
+          )}
         </div>
       </div>
 
