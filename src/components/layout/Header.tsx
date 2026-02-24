@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Film, Heart, Menu, LogOut, User, Crown } from "lucide-react";
+import { Film, Heart, Menu, LogOut, User, Crown, Receipt } from "lucide-react";
 import { MovieSearch } from "@/components/movies/MovieSearch";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -77,6 +77,14 @@ export const Header = () => {
                   PRO
                 </span>
               )}
+            </Link>
+
+            <Link
+              to="/purchases"
+              className="flex items-center gap-2 text-slate-400 hover:text-blue-400 transition-colors"
+            >
+              <Receipt size={20} />
+              <span>Mis compras</span>
             </Link>
 
             {/* User Menu */}
@@ -204,6 +212,15 @@ export const Header = () => {
                     PRO
                   </span>
                 )}
+              </Link>
+
+              <Link
+                to="/purchases"
+                className="flex items-center gap-2 text-slate-400 hover:text-blue-400 transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Receipt size={20} />
+                <span>Mis compras</span>
               </Link>
 
               <button
