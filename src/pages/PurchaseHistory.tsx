@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Receipt,
   Film,
@@ -13,35 +13,17 @@ import {
   ArrowRight,
   Crown,
 } from "lucide-react";
+
+type HistoryTab = "tickets" | "subscriptions";
 import { ordersService } from "@/services/orders.service";
 import { subscriptionsService } from "@/services/subscriptions.service";
 import type {
   OrderHistoryItem,
-  PurchaseHistoryItem,
   SubscriptionPurchaseItem,
 } from "@/types/order.types";
 
-function mergeAndSortPurchases(
-  orders: OrderHistoryItem[],
-  subscriptionPurchases: SubscriptionPurchaseItem[]
-): PurchaseHistoryItem[] {
-  const ticketItems: PurchaseHistoryItem[] = (orders ?? []).map((data) => ({
-    type: "ticket",
-    data,
-  }));
-  const subItems: PurchaseHistoryItem[] = (subscriptionPurchases ?? []).map(
-    (data) => ({ type: "subscription", data })
-  );
-  const merged = [...ticketItems, ...subItems];
-  merged.sort(
-    (a, b) =>
-      new Date(b.data.created_at).getTime() -
-      new Date(a.data.created_at).getTime()
-  );
-  return merged;
-}
-
 export const PurchaseHistory = () => {
+  const [activeTab, setActiveTab] = useState<HistoryTab>("tickets");
   const [orders, setOrders] = useState<OrderHistoryItem[]>([]);
   const [subscriptionPurchases, setSubscriptionPurchases] = useState<
     SubscriptionPurchaseItem[]
@@ -84,8 +66,6 @@ export const PurchaseHistory = () => {
       cancelled = true;
     };
   }, []);
-
-  const items = mergeAndSortPurchases(orders, subscriptionPurchases);
 
   const formatDate = (dateStr: string) => {
     try {
@@ -150,9 +130,104 @@ export const PurchaseHistory = () => {
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-50 mb-4">
             Historial de compras
           </h1>
-          <p className="text-slate-400 text-base sm:text-lg max-w-xl mx-auto">
+          <p className="text-slate-400 text-base sm:text-lg max-w-xl mx-auto mb-8">
             Tickets y compras de planes en un solo lugar.
           </p>
+
+          {/* Tabs: Compras de tickets | Compras de suscripción */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="inline-flex p-1.5 bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-lg shadow-black/10"
+          >
+            <button
+              type="button"
+              onClick={() => setActiveTab("tickets")}
+              className="relative flex items-center gap-2.5 px-5 sm:px-6 py-3 rounded-xl text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+            >
+              {activeTab === "tickets" && (
+                <motion.span
+                  layoutId="purchase-history-tab"
+                  className="absolute inset-0 bg-gradient-to-r from-blue-500/25 to-violet-600/25 border border-blue-500/30 rounded-xl"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative flex items-center gap-2.5">
+                <Ticket
+                  size={20}
+                  className={
+                    activeTab === "tickets"
+                      ? "text-blue-400"
+                      : "text-slate-400"
+                  }
+                />
+                <span
+                  className={
+                    activeTab === "tickets"
+                      ? "text-slate-50"
+                      : "text-slate-400 hover:text-slate-300"
+                  }
+                >
+                  Compras de tickets
+                </span>
+                {orders.length > 0 && (
+                  <span
+                    className={`min-w-[1.25rem] h-5 px-1.5 flex items-center justify-center rounded-md text-xs font-bold ${
+                      activeTab === "tickets"
+                        ? "bg-blue-500/30 text-blue-300"
+                        : "bg-slate-700/60 text-slate-400"
+                    }`}
+                  >
+                    {orders.length}
+                  </span>
+                )}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("subscriptions")}
+              className="relative flex items-center gap-2.5 px-5 sm:px-6 py-3 rounded-xl text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+            >
+              {activeTab === "subscriptions" && (
+                <motion.span
+                  layoutId="purchase-history-tab"
+                  className="absolute inset-0 bg-gradient-to-r from-violet-500/25 to-blue-500/25 border border-violet-500/30 rounded-xl"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative flex items-center gap-2.5">
+                <Crown
+                  size={20}
+                  className={
+                    activeTab === "subscriptions"
+                      ? "text-violet-400"
+                      : "text-slate-400"
+                  }
+                />
+                <span
+                  className={
+                    activeTab === "subscriptions"
+                      ? "text-slate-50"
+                      : "text-slate-400 hover:text-slate-300"
+                  }
+                >
+                  Compras de suscripción
+                </span>
+                {subscriptionPurchases.length > 0 && (
+                  <span
+                    className={`min-w-[1.25rem] h-5 px-1.5 flex items-center justify-center rounded-md text-xs font-bold ${
+                      activeTab === "subscriptions"
+                        ? "bg-violet-500/30 text-violet-300"
+                        : "bg-slate-700/60 text-slate-400"
+                    }`}
+                  >
+                    {subscriptionPurchases.length}
+                  </span>
+                )}
+              </span>
+            </button>
+          </motion.div>
         </motion.div>
 
         {/* Error */}
@@ -175,145 +250,182 @@ export const PurchaseHistory = () => {
           </div>
         )}
 
-        {/* Lista unificada: tickets y compras de planes */}
-        {!loading && !error && items.length > 0 && (
-          <div className="max-w-2xl mx-auto space-y-4">
-            {items.map((item, index) =>
-              item.type === "ticket" ? (
+        {/* Contenido según pestaña activa */}
+        {!loading && !error && (
+          <div className="max-w-2xl mx-auto mt-8">
+            <AnimatePresence mode="wait">
+              {activeTab === "tickets" ? (
                 <motion.div
-                  key={`ticket-${item.data.id}`}
-                  initial={{ opacity: 0, y: 20 }}
+                  key="tickets"
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.06 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                  className="space-y-4"
                 >
-                  <Link
-                    to={`/movie/${item.data.movie_id}`}
-                    className="block group"
-                  >
-                    <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/40 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:border-slate-600/50 hover:bg-slate-800/60">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-violet-600/20 border border-blue-500/20 flex items-center justify-center flex-shrink-0 group-hover:from-blue-500/30 group-hover:to-violet-600/30 transition-colors">
-                          <Film size={24} className="text-blue-400" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-slate-50 font-bold text-lg truncate group-hover:text-blue-400 transition-colors">
-                            {item.data.movie_title}
-                          </h3>
-                          <p className="text-slate-400 text-sm mt-0.5">
-                            {item.data.cinema_name}
-                          </p>
-                          <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-sm">
-                            <div className="flex items-center gap-2">
-                              <Calendar size={14} className="text-blue-400 flex-shrink-0" />
-                              <span className="text-slate-400">Fecha:</span>
-                              <span className="text-slate-200 font-medium capitalize">
-                                {formatDate(item.data.showtime_date)}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Clock size={14} className="text-violet-400 flex-shrink-0" />
-                              <span className="text-slate-400">Hora:</span>
-                              <span className="text-slate-200 font-medium">
-                                {item.data.showtime_time}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Building2 size={14} className="text-emerald-400 flex-shrink-0" />
-                              <span className="text-slate-400">Sala:</span>
-                              <span className="text-slate-200 font-medium">
-                                {item.data.room_name}
-                              </span>
+                  {orders.length > 0 ? (
+                    orders.map((order, index) => (
+                      <motion.div
+                        key={`ticket-${order.id}`}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.04 }}
+                      >
+                        <Link
+                          to={`/movie/${order.movie_id}`}
+                          className="block group"
+                        >
+                          <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/40 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:border-slate-600/50 hover:bg-slate-800/60">
+                            <div className="flex items-start gap-4">
+                              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-violet-600/20 border border-blue-500/20 flex items-center justify-center flex-shrink-0 group-hover:from-blue-500/30 group-hover:to-violet-600/30 transition-colors">
+                                <Film size={24} className="text-blue-400" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-slate-50 font-bold text-lg truncate group-hover:text-blue-400 transition-colors">
+                                  {order.movie_title}
+                                </h3>
+                                <p className="text-slate-400 text-sm mt-0.5">
+                                  {order.cinema_name}
+                                </p>
+                                <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-sm">
+                                  <div className="flex items-center gap-2">
+                                    <Calendar size={14} className="text-blue-400 flex-shrink-0" />
+                                    <span className="text-slate-400">Fecha:</span>
+                                    <span className="text-slate-200 font-medium capitalize">
+                                      {formatDate(order.showtime_date)}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock size={14} className="text-violet-400 flex-shrink-0" />
+                                    <span className="text-slate-400">Hora:</span>
+                                    <span className="text-slate-200 font-medium">
+                                      {order.showtime_time}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Building2 size={14} className="text-emerald-400 flex-shrink-0" />
+                                    <span className="text-slate-400">Sala:</span>
+                                    <span className="text-slate-200 font-medium">
+                                      {order.room_name}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="mt-3 flex flex-wrap items-center gap-3">
+                                  <div className="flex items-center gap-2 px-2.5 py-1 bg-slate-900/40 border border-slate-700/30 rounded-lg">
+                                    <Ticket size={14} className="text-amber-400" />
+                                    <span className="text-slate-300 text-sm">
+                                      {order.tickets_count} ticket
+                                      {order.tickets_count !== 1 ? "s" : ""}
+                                    </span>
+                                  </div>
+                                  <span className="text-emerald-400 font-bold text-lg">
+                                    ${typeof order.total_amount === "number" ? order.total_amount.toFixed(2) : order.total_amount}
+                                  </span>
+                                  <span className="text-slate-500 text-xs ml-auto">
+                                    Comprado: {formatCreatedAt(order.created_at)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex-shrink-0 self-center">
+                                <ArrowRight size={20} className="text-slate-500 group-hover:text-blue-400 transition-colors" />
+                              </div>
                             </div>
                           </div>
-                          <div className="mt-3 flex flex-wrap items-center gap-3">
-                            <div className="flex items-center gap-2 px-2.5 py-1 bg-slate-900/40 border border-slate-700/30 rounded-lg">
-                              <Ticket size={14} className="text-amber-400" />
-                              <span className="text-slate-300 text-sm">
-                                {item.data.tickets_count} ticket
-                                {item.data.tickets_count !== 1 ? "s" : ""}
-                              </span>
-                            </div>
-                            <span className="text-emerald-400 font-bold text-lg">
-                              ${typeof item.data.total_amount === "number" ? item.data.total_amount.toFixed(2) : item.data.total_amount}
-                            </span>
-                            <span className="text-slate-500 text-xs ml-auto">
-                              Comprado: {formatCreatedAt(item.data.created_at)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex-shrink-0 self-center">
-                          <ArrowRight size={20} className="text-slate-500 group-hover:text-blue-400 transition-colors" />
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+                        </Link>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="bg-slate-800/30 border border-slate-700/30 rounded-2xl p-8 text-center"
+                    >
+                      <Ticket size={48} className="text-slate-600 mx-auto mb-4" />
+                      <p className="text-slate-400 text-sm">
+                        Aún no tienes compras de tickets.
+                      </p>
+                      <Link
+                        to="/"
+                        className="inline-flex items-center gap-2 mt-4 text-blue-400 hover:text-blue-300 text-sm font-medium"
+                      >
+                        Ver películas
+                        <ArrowRight size={14} />
+                      </Link>
+                    </motion.div>
+                  )}
                 </motion.div>
               ) : (
                 <motion.div
-                  key={`sub-${item.data.id}`}
-                  initial={{ opacity: 0, y: 20 }}
+                  key="subscriptions"
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.06 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                  className="space-y-4"
                 >
-                  <Link to="/plans" className="block group">
-                    <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/40 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:border-violet-500/40 hover:bg-slate-800/60">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500/20 to-blue-500/20 border border-violet-500/20 flex items-center justify-center flex-shrink-0 group-hover:from-violet-500/30 group-hover:to-blue-500/30 transition-colors">
-                          <Crown size={24} className="text-violet-400" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-slate-50 font-bold text-lg truncate group-hover:text-violet-400 transition-colors">
-                            Plan {item.data.plan_name}
-                          </h3>
-                          <p className="text-slate-400 text-sm mt-0.5">
-                            Suscripción mensual
-                          </p>
-                          <div className="mt-3 flex flex-wrap items-center gap-3">
-                            <span className="text-emerald-400 font-bold text-lg">
-                              ${typeof item.data.total_amount === "number" ? item.data.total_amount.toFixed(2) : item.data.total_amount}
-                            </span>
-                            <span className="text-slate-500 text-xs ml-auto">
-                              Contratado: {formatCreatedAt(item.data.created_at)}
-                            </span>
+                  {subscriptionPurchases.length > 0 ? (
+                    subscriptionPurchases.map((sub, index) => (
+                      <motion.div
+                        key={`sub-${sub.id}`}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.04 }}
+                      >
+                        <Link to="/plans" className="block group">
+                          <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/40 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:border-violet-500/40 hover:bg-slate-800/60">
+                            <div className="flex items-start gap-4">
+                              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500/20 to-blue-500/20 border border-violet-500/20 flex items-center justify-center flex-shrink-0 group-hover:from-violet-500/30 group-hover:to-blue-500/30 transition-colors">
+                                <Crown size={24} className="text-violet-400" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-slate-50 font-bold text-lg truncate group-hover:text-violet-400 transition-colors">
+                                  Plan {sub.plan_name}
+                                </h3>
+                                <p className="text-slate-400 text-sm mt-0.5">
+                                  Suscripción mensual
+                                </p>
+                                <div className="mt-3 flex flex-wrap items-center gap-3">
+                                  <span className="text-emerald-400 font-bold text-lg">
+                                    ${typeof sub.total_amount === "number" ? sub.total_amount.toFixed(2) : sub.total_amount}
+                                  </span>
+                                  <span className="text-slate-500 text-xs ml-auto">
+                                    Contratado: {formatCreatedAt(sub.created_at)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex-shrink-0 self-center">
+                                <ArrowRight size={20} className="text-slate-500 group-hover:text-violet-400 transition-colors" />
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex-shrink-0 self-center">
-                          <ArrowRight size={20} className="text-slate-500 group-hover:text-violet-400 transition-colors" />
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+                        </Link>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="bg-slate-800/30 border border-slate-700/30 rounded-2xl p-8 text-center"
+                    >
+                      <Crown size={48} className="text-slate-600 mx-auto mb-4" />
+                      <p className="text-slate-400 text-sm">
+                        Aún no tienes compras de suscripción.
+                      </p>
+                      <Link
+                        to="/plans"
+                        className="inline-flex items-center gap-2 mt-4 text-violet-400 hover:text-violet-300 text-sm font-medium"
+                      >
+                        Ver planes
+                        <ArrowRight size={14} />
+                      </Link>
+                    </motion.div>
+                  )}
                 </motion.div>
-              )
-            )}
+              )}
+            </AnimatePresence>
           </div>
         )}
 
-        {/* Estado vacío - estilo coherente con Favorites/Plans */}
-        {!loading && !error && items.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="max-w-md mx-auto text-center py-20"
-          >
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-800/50 border border-slate-700/50 rounded-2xl mb-6">
-              <Receipt size={40} className="text-slate-500" />
-            </div>
-            <h2 className="text-xl font-bold text-slate-50 mb-2">
-              Aún no tienes compras
-            </h2>
-            <p className="text-slate-400 text-sm mb-6">
-              Cuando compres tickets o te suscribas a un plan, aparecerán aquí.
-            </p>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 px-5 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-blue-500/30 rounded-xl text-slate-300 hover:text-slate-50 font-medium transition-all"
-            >
-              <ArrowRight size={18} />
-              Ver películas
-            </Link>
-          </motion.div>
-        )}
       </div>
     </div>
   );
