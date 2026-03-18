@@ -15,6 +15,7 @@ import { Plans } from "@/pages/Plans";
 import { PurchaseHistory } from "@/pages/PurchaseHistory";
 import { SubscriptionSuccess } from "@/pages/SubscriptionSuccess";
 import { SubscriptionCancel } from "@/pages/SubscriptionCancel";
+import { TrendingPDF } from "@/pages/TrendingPDF";
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -173,6 +174,17 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <SubscriptionCancel />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/trending/pdf"
+        element={
+          <ProtectedRoute>
+            <AuthenticatedLayout>
+              <TrendingPDF />
+            </AuthenticatedLayout>
           </ProtectedRoute>
         }
       />

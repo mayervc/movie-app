@@ -25,10 +25,17 @@ export const searchMovies = async (query: string): Promise<Movie[]> => {
 
 export const getPopularMovies = async (): Promise<Movie[]> => {
   const response = await api.get("/movies/popular");
-  return response.data;
+  return response.data?.data ?? response.data;
 };
 
 export const getTopRatedMovies = async (): Promise<Movie[]> => {
   const response = await api.get("/movies/top-rated");
+  return response.data?.data ?? response.data;
+};
+
+export const getTrendingMoviesPdf = async (): Promise<Blob> => {
+  const response = await api.get("/movies/trending/pdf", {
+    responseType: "blob",
+  });
   return response.data;
 };
