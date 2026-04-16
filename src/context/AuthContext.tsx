@@ -75,14 +75,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (data: RegisterData) => {
     try {
       const response = await registerUser(data);
-      
-      // Guardar token y usuario
-      localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
-      
       setUser(response.user);
     } catch (error) {
-      // El error ya viene formateado desde el servicio
       throw error;
     }
   };

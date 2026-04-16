@@ -17,10 +17,9 @@ export interface LoginResponse {
   token: string;
 }
 
-// Respuesta del registro (user + token)
+// Respuesta del registro (solo user — BE no devuelve token en signup)
 export interface RegisterResponse {
   user: User;
-  token: string;
 }
 
 // Tipo genérico para respuestas de autenticación

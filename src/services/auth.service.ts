@@ -50,7 +50,7 @@ export const registerUser = async (
   data: RegisterData,
 ): Promise<RegisterResponse> => {
   try {
-    const response = await api.post<RegisterResponse>("/auth/register", data);
+    const response = await api.post<RegisterResponse>("/auth/signup", data);
     return response.data;
   } catch (error: any) {
     // Manejar errores del backend
