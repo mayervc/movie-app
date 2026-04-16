@@ -12,15 +12,15 @@ export interface User {
   updatedAt: string;
 }
 
-// Respuesta del login (solo token)
+// Respuesta del login — BE returns { access_token, user }
 export interface LoginResponse {
-  token: string;
+  access_token: string;
+  user: User;
 }
 
-// Respuesta del registro (user + token)
+// Respuesta del registro (solo user — BE no devuelve token en signup)
 export interface RegisterResponse {
   user: User;
-  token: string;
 }
 
 // Tipo genérico para respuestas de autenticación
