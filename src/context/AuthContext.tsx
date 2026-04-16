@@ -43,31 +43,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       const response = await loginUser(email, password);
-      
-      // Guardar token
-      localStorage.setItem("token", response.token);
-      
-      // El login solo devuelve el token, no el usuario completo
-      // Podríamos hacer una llamada adicional para obtener el usuario si es necesario
-      // Por ahora, creamos un objeto usuario básico con el email
-      const basicUser: User = {
-        id: 0, // Se actualizará cuando obtengamos el usuario completo
-        email,
-        firstName: null,
-        lastName: null,
-        roleId: 2, // Rol por defecto (client)
-        phoneNumber: null,
-        birthday: null,
-        genres: [],
-        city: null,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      
-      localStorage.setItem("user", JSON.stringify(basicUser));
-      setUser(basicUser);
+      localStorage.setItem("token", response.access_token);
+      localStorage.setItem("user", JSON.stringify(response.user));
+      setUser(response.user);
     } catch (error) {
-      // El error ya viene formateado desde el servicio
       throw error;
     }
   };
