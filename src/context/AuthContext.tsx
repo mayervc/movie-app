@@ -53,9 +53,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = async (data: RegisterData) => {
     try {
-      const response = await registerUser(data);
-      localStorage.setItem("user", JSON.stringify(response.user));
-      setUser(response.user);
+      await registerUser(data);
+      // BE does not return a token on signup — auto-login to get one
+      await login(data.email, data.password);
     } catch (error) {
       throw error;
     }
