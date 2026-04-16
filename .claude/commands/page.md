@@ -1,25 +1,26 @@
 # /page
 
-Crea una nueva página (route component) siguiendo las convenciones del proyecto.
+Creates a new page (route component) following project conventions.
 
-## Argumentos
-`$ARGUMENTS` — nombre de la página y opcionalmente la ruta. Ejemplos: `ActorDetail`, `Profile /profile`
+## Arguments
+`$ARGUMENTS` — page name and optionally the route path.
+Examples: `ActorDetail`, `Profile /profile`
 
-## Convenciones del proyecto (OBLIGATORIO seguir)
-- **Ubicación:** `src/pages/<NombrePage>.tsx`
+## Project conventions (REQUIRED)
+- **Location:** `src/pages/<NamePage>.tsx`
 - **Stack:** React 18 + TypeScript + Tailwind CSS + Framer Motion
-- **Path alias:** usar `@/` en todos los imports
+- **Path alias:** use `@/` for all imports
 - **Exports:** named export
-- **Routing:** React Router v6. Revisar `src/App.tsx` para ver cómo se registran las rutas.
-- **Layout:** las páginas autenticadas renderizan dentro de `AuthenticatedLayout` (que incluye `Header`). No reimplementar el layout.
-- **Datos:** usar `useEffect` + servicio de `src/services/` o custom hook de `src/hooks/`. No fetch directo.
-- **Estados:** loading skeleton + error state siempre presentes.
-- **Fondo base:** `bg-slate-900 min-h-screen`
-- **Animaciones de entrada:** `motion.div` con `initial={{ opacity: 0, y: 20 }}` y `animate={{ opacity: 1, y: 0 }}`
+- **Routing:** React Router v6. Read `src/App.tsx` to understand how routes are registered.
+- **Layout:** authenticated pages render inside `AuthenticatedLayout` (includes `Header`). Do not reimplement the layout.
+- **Data:** use `useEffect` + service from `src/services/` or a custom hook from `src/hooks/`. No direct fetch calls.
+- **States:** loading skeleton + error state always present.
+- **Base background:** `bg-slate-900 min-h-screen`
+- **Entry animations:** `motion.div` with `initial={{ opacity: 0, y: 20 }}` and `animate={{ opacity: 1, y: 0 }}`
 
-## Pasos
-1. Lee `src/App.tsx` para entender la estructura de rutas existente.
-2. Lee páginas similares en `src/pages/` para mantener consistencia visual.
-3. Crea `src/pages/<Nombre>Page.tsx` con loading, error y contenido principal.
-4. Indica al final qué línea agregar en `src/App.tsx` para registrar la nueva ruta.
-5. No modificar `App.tsx` automáticamente — solo mostrar el snippet a agregar.
+## Steps
+1. Read `src/App.tsx` to understand the existing route structure.
+2. Read similar pages in `src/pages/` to maintain visual consistency.
+3. Create `src/pages/<Name>Page.tsx` with loading, error, and main content states.
+4. At the end, show the snippet to add in `src/App.tsx` to register the new route.
+5. Do not modify `App.tsx` automatically — only show the snippet to add.

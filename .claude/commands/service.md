@@ -1,22 +1,22 @@
 # /service
 
-Crea un nuevo servicio API o agrega métodos a uno existente, siguiendo el patrón del proyecto.
+Creates a new API service or adds methods to an existing one, following the project pattern.
 
-## Argumentos
-`$ARGUMENTS` — nombre del módulo. Ejemplos: `users`, `actors`, `cinemas`
+## Arguments
+`$ARGUMENTS` — module name. Examples: `users`, `actors`, `cinemas`
 
-## Convenciones del proyecto (OBLIGATORIO seguir)
-- **Ubicación:** `src/services/<nombre>.service.ts`
-- **Instancia axios:** importar y usar siempre `api` de `@/services/api` (ya tiene interceptores de auth y 401)
-- **Naming:** camelCase en todos los campos de body y params — el BE usa camelCase
-- **Errores:** no swallowear errores salvo que el endpoint devuelva 404 como estado válido (ej: `getMySubscription`)
-- **Tipos:** todas las funciones tipadas con interfaces de `@/types/`. Si el tipo no existe, crearlo en `src/types/<modulo>.types.ts`
-- **Exports:** objeto nombrado `<nombre>Service` con métodos, o funciones named export — seguir el patrón del archivo más cercano en `src/services/`
+## Project conventions (REQUIRED)
+- **Location:** `src/services/<name>.service.ts`
+- **Axios instance:** always import and use `api` from `@/services/api` (already has auth and 401 interceptors)
+- **Naming:** camelCase for all body fields and params — the BE uses camelCase
+- **Errors:** do not swallow errors unless the endpoint returns 404 as a valid state (e.g. `getMySubscription`)
+- **Types:** all functions typed with interfaces from `@/types/`. If the type does not exist, create it in `src/types/<module>.types.ts`
+- **Exports:** named object `<name>Service` with methods, or named export functions — follow the pattern of the closest file in `src/services/`
 
-## Pasos
-1. Lee `src/services/api.ts` para entender la instancia axios.
-2. Lee 2–3 servicios existentes para inferir el estilo exacto.
-3. Consulta el API Reference del BE (disponible en CLAUDE.md o el contexto actual) para los endpoints del módulo.
-4. Si el servicio ya existe, agrega solo los métodos faltantes sin tocar los existentes.
-5. Crea o actualiza los tipos en `src/types/` si es necesario.
-6. No crear mocks ni tests.
+## Steps
+1. Read `src/services/api.ts` to understand the axios instance.
+2. Read 2–3 existing services to infer the exact style.
+3. Check the BE API Reference (available in CLAUDE.md or current context) for the module's endpoints.
+4. If the service already exists, only add the missing methods without touching existing ones.
+5. Create or update types in `src/types/` if necessary.
+6. Do not create mocks or tests.

@@ -1,15 +1,15 @@
 # /lean
 
-Activa modo conciso para el resto de la conversación.
+Enables concise mode for the rest of the conversation.
 
-## Instrucciones
-A partir de este mensaje:
-- Respuestas cortas. Solo el código o la acción solicitada.
-- Sin preámbulos ("Claro, voy a...", "Entendido, ...").
-- Sin resúmenes al final de lo que se hizo.
-- Sin comentarios en el código salvo que la lógica sea genuinamente no obvia.
-- Sin sugerencias de mejoras no pedidas.
-- Si necesitas confirmar algo antes de actuar, una sola pregunta, breve.
-- Errores: solo el problema y la solución, sin historia.
+## Instructions
+From this message onwards:
+- Short responses. Only the code or the requested action.
+- No preambles ("Sure, I'll...", "Got it, ...").
+- No summaries at the end of what was done.
+- No code comments unless the logic is genuinely non-obvious.
+- No unsolicited improvement suggestions.
+- If clarification is needed before acting, one short question only.
+- Errors: just the problem and the fix, no backstory.
 
-Confirma con: "Modo lean activado."
+Confirm with: "Lean mode on."

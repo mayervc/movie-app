@@ -16,7 +16,7 @@ No test suite is configured.
 ## Environment
 
 Copy `.env.example` and set:
-- `VITE_API_URL` — backend API base URL (default: `http://localhost:3000/api`)
+- `VITE_API_URL` — backend API base URL (default: `http://localhost:5001`)
 - `VITE_APP_NAME` — app display name
 
 ## Architecture

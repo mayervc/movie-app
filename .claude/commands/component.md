@@ -1,27 +1,27 @@
 # /component
 
-Crea un nuevo componente React siguiendo las convenciones del proyecto.
+Creates a new React component following project conventions.
 
-## Argumentos
-`$ARGUMENTS` — nombre del componente (PascalCase) y opcionalmente su carpeta destino.
-Ejemplos: `MovieCard`, `tickets/SeatPicker`, `ui/Badge`
+## Arguments
+`$ARGUMENTS` — component name (PascalCase) and optionally the target subfolder.
+Examples: `MovieCard`, `tickets/SeatPicker`, `ui/Badge`
 
-## Convenciones del proyecto (OBLIGATORIO seguir)
+## Project conventions (REQUIRED)
 - **Stack:** React 18 + TypeScript + Tailwind CSS + Framer Motion
-- **Path alias:** usar `@/` en todos los imports
+- **Path alias:** use `@/` for all imports
 - **Exports:** named export (no default export)
-- **Props:** interface `<Name>Props` en el mismo archivo, tipada al 100%
-- **Estilos:** solo Tailwind. Fondo base `slate-900`, acentos `blue-500` / `violet-500`
-- **Animaciones:** Framer Motion, duración 200–300 ms. Usar `motion.div` etc.
-- **Carpeta destino:** `src/components/<subcarpeta>/` según el dominio (`movies/`, `tickets/`, `layout/`, `ui/`). Si no se indica, inferir por el nombre.
+- **Props:** `<Name>Props` interface defined in the same file, fully typed
+- **Styles:** Tailwind only. Base background `slate-900`, accents `blue-500` / `violet-500`
+- **Animations:** Framer Motion, 200–300 ms duration. Use `motion.div` etc.
+- **Target folder:** `src/components/<subfolder>/` by domain (`movies/`, `tickets/`, `layout/`, `ui/`). Infer from name if not specified.
 
-## Pasos
-1. Lee los componentes existentes en `src/components/` para entender el estilo real del proyecto.
-2. Si el componente consume datos del backend, revisa el servicio correspondiente en `src/services/`.
-3. Crea el archivo `.tsx` con:
-   - Interface de props
-   - Componente funcional tipado
-   - Tailwind classes coherentes con el design system
-   - Framer Motion si hay interacciones o entradas animadas
-4. Si aplica, crea o actualiza el barrel export `index.ts` de la subcarpeta.
-5. No crear tests ni Storybook salvo que se pida explícitamente.
+## Steps
+1. Read existing components in `src/components/` to understand the project's real style.
+2. If the component consumes backend data, check the relevant service in `src/services/`.
+3. Create the `.tsx` file with:
+   - Props interface
+   - Typed functional component
+   - Tailwind classes consistent with the design system
+   - Framer Motion for interactions or animated entries
+4. If applicable, create or update the subfolder's `index.ts` barrel export.
+5. Do not create tests or Storybook unless explicitly requested.
