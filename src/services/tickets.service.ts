@@ -1,30 +1,26 @@
 import api from "./api";
-import type { TicketPurchaseResponse } from "@/types/ticket.types";
+import type { Ticket, TicketPurchaseResponse } from "@/types/ticket.types";
 
 export const ticketsService = {
-  /**
-   * Comprar tickets (requiere auth)
-   */
   purchase: async (
     showtimeId: number,
-    seatIds: number[]
+    seatIds: number[],
+    paymentIntentId: string
   ): Promise<TicketPurchaseResponse> => {
     const { data } = await api.post("/tickets", {
-      showtime_id: showtimeId,
-      seats: seatIds,
+      showtimeId,
+      seatIds,
+      paymentIntentId,
     });
     return data;
   },
 
-  /**
-   * Generar token de Google Wallet (opcional, requiere auth)
-   */
-  generateWalletToken: async (
-    ticketId: number
-  ): Promise<{ token: string; ticket_id: number }> => {
-    const { data } = await api.post("/tickets/google-wallet-token", {
-      ticketId,
-    });
+  getById: async (id: number): Promise<Ticket> => {
+    const { data } = await api.get(`/tickets/${id}`);
     return data;
+  },
+
+  cancel: async (id: number): Promise<void> => {
+    await api.delete(`/tickets/${id}`);
   },
 };
