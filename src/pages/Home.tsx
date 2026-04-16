@@ -4,13 +4,13 @@ import { AlertCircle, RefreshCw } from "lucide-react";
 import { MovieGrid } from "@/components/movies/MovieGrid";
 import {
   getPopularMovies,
-  getTopRatedMovies,
+  getTrendingMovies,
 } from "@/services/movies.service";
 import type { Movie } from "@/types/movie.types";
 
 export const Home = () => {
   const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
-  const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
+  const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,12 +18,12 @@ export const Home = () => {
     try {
       setLoading(true);
       setError(null);
-      const [popular, topRated] = await Promise.all([
+      const [popular, trending] = await Promise.all([
         getPopularMovies(),
-        getTopRatedMovies(),
+        getTrendingMovies(),
       ]);
       setPopularMovies(popular);
-      setTopRatedMovies(topRated);
+      setTrendingMovies(trending);
     } catch (err: any) {
       const errors = err.response?.data?.errors;
       const message = Array.isArray(errors)
@@ -101,7 +101,7 @@ export const Home = () => {
         </section>
       )}
 
-      {/* Top Rated Movies */}
+      {/* Trending Movies */}
       {!error && (
         <section className="container mx-auto px-4 py-12">
           <motion.h2
@@ -110,14 +110,14 @@ export const Home = () => {
             viewport={{ once: true }}
             className="text-3xl font-bold mb-8"
           >
-            Mejor Valoradas
+            En Tendencia
           </motion.h2>
-          {!loading && topRatedMovies.length === 0 ? (
+          {!loading && trendingMovies.length === 0 ? (
             <div className="text-center text-slate-400 py-12">
-              No se encontraron películas mejor valoradas
+              No se encontraron películas en tendencia
             </div>
           ) : (
-            <MovieGrid movies={topRatedMovies} loading={loading} />
+            <MovieGrid movies={trendingMovies} loading={loading} />
           )}
         </section>
       )}

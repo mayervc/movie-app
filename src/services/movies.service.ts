@@ -28,8 +28,8 @@ export const getPopularMovies = async (): Promise<Movie[]> => {
   return response.data?.data ?? response.data;
 };
 
-export const getTopRatedMovies = async (): Promise<Movie[]> => {
-  const response = await api.get("/movies/top-rated");
+export const getTrendingMovies = async (): Promise<Movie[]> => {
+  const response = await api.get("/movies/trending");
   return response.data?.data ?? response.data;
 };
 
