@@ -58,14 +58,11 @@ export const useTicketPurchase = (movieId: number) => {
     try {
       setLoadingCinemas(true);
       setCinemasError(null);
-      const params: { page: number; limit: number; name?: string } = {
+      const response = await cinemasService.search({
         page: 1,
         limit: 50,
-      };
-      if (query && query.trim()) {
-        params.name = query.trim();
-      }
-      const response = await cinemasService.search(params);
+        ...(query?.trim() && { q: query.trim() }),
+      });
       setCinemas(response.cinemas);
     } catch (err: any) {
       const errors = err.response?.data?.errors;

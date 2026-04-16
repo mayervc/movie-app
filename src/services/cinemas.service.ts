@@ -1,17 +1,26 @@
 import api from "./api";
-import type {
-  CinemaSearchParams,
-  CinemaSearchResponse,
-} from "@/types/cinema.types";
+import type { Cinema, CinemaSearchResponse } from "@/types/cinema.types";
 
 export const cinemasService = {
-  /**
-   * Buscar cinemas (requiere autenticación)
-   */
-  search: async (
-    params: CinemaSearchParams
-  ): Promise<CinemaSearchResponse> => {
-    const { data } = await api.post("/cinemas/search", params);
+  search: async (params: {
+    q?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<CinemaSearchResponse> => {
+    const { data } = await api.get("/cinemas/search", { params });
+    return data;
+  },
+
+  getAll: async (params?: {
+    page?: number;
+    limit?: number;
+  }): Promise<CinemaSearchResponse> => {
+    const { data } = await api.get("/cinemas", { params });
+    return data;
+  },
+
+  getById: async (id: number): Promise<Cinema> => {
+    const { data } = await api.get(`/cinemas/${id}`);
     return data;
   },
 };
