@@ -8,12 +8,6 @@ export interface Cinema {
   countryCode?: number;
 }
 
-export interface CinemaSearchParams {
-  page?: number;
-  limit?: number;
-  name?: string;
-  city?: string;
-}
 
 export interface CinemaSearchResponse {
   cinemas: Cinema[];
