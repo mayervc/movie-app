@@ -43,7 +43,10 @@ export const Plans = () => {
     try {
       setLoadingPlan(plan);
       setError(null);
-      const { url } = await subscriptionsService.createCheckoutSession(plan);
+      const base = window.location.origin;
+      const successUrl = `${base}/subscription/success?session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl = `${base}/plans`;
+      const { url } = await subscriptionsService.createCheckoutSession(plan, successUrl, cancelUrl);
       window.location.href = url;
     } catch (err: any) {
       const errors = err.response?.data?.errors;
