@@ -14,18 +14,22 @@ export const SubscriptionSuccess = () => {
   const [verifyError, setVerifyError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!sessionId) {
-      refresh();
-      return;
-    }
+    const activate = async () => {
+      if (!sessionId) {
+        await refresh();
+        return;
+      }
+      try {
+        await subscriptionsService.verify(sessionId);
+        await refresh();
+      } catch {
+        setVerifyError("No se pudo activar la suscripción. Contacta soporte si el cargo fue realizado.");
+      } finally {
+        setVerifying(false);
+      }
+    };
 
-    subscriptionsService
-      .verify(sessionId)
-      .then(() => refresh())
-      .catch(() =>
-        setVerifyError("No se pudo activar la suscripción. Contacta soporte si el cargo fue realizado.")
-      )
-      .finally(() => setVerifying(false));
+    activate();
   }, [sessionId, refresh]);
 
   return (
