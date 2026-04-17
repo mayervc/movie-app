@@ -29,11 +29,21 @@ export const subscriptionsService = {
    * Redirige al usuario al checkout de Stripe.
    */
   createCheckoutSession: async (
-    plan: SubscriptionPlanSlug
+    plan: SubscriptionPlanSlug,
+    successUrl: string,
+    cancelUrl: string
   ): Promise<CreateSubscriptionCheckoutResponse> => {
     const { data } = await api.post<CreateSubscriptionCheckoutResponse>(
       "/subscriptions/create-checkout",
-      { plan }
+      { plan, successUrl, cancelUrl }
+    );
+    return data;
+  },
+
+  verify: async (sessionId: string): Promise<UserSubscription> => {
+    const { data } = await api.post<UserSubscription>(
+      "/subscriptions/verify",
+      { sessionId }
     );
     return data;
   },

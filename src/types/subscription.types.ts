@@ -73,6 +73,8 @@ export interface UserSubscription {
 
 export interface CreateSubscriptionCheckoutRequest {
   plan: SubscriptionPlanSlug;
+  successUrl: string;
+  cancelUrl: string;
 }
 
 export interface CreateSubscriptionCheckoutResponse {
