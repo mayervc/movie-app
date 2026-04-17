@@ -1,7 +1,19 @@
 // Solicitud de compra de tickets
 export interface TicketPurchaseRequest {
-  showtime_id: number;
-  seats: number[]; // IDs de asientos
+  showtimeId: number;
+  seatIds: number[];
+  paymentIntentId: string;
+}
+
+// Ticket individual (GET /tickets/:id)
+export interface Ticket {
+  id: number;
+  showtimeId: number;
+  seatId: number;
+  userId: number;
+  paymentIntentId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Respuesta de compra de tickets
