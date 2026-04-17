@@ -173,11 +173,14 @@ export const useTicketPurchase = (movieId: number) => {
     try {
       setPurchasing(true);
       setPurchaseError(null);
+      const base = window.location.origin;
+      const successUrl = `${base}/movie/${movieId}/tickets/success?session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl = `${base}/movie/${movieId}/tickets`;
       const { url } = await paymentsService.createCheckoutSession(
         selectedShowtime.id,
         selectedSeats,
-        movieId,
-        user?.email ?? undefined
+        successUrl,
+        cancelUrl
       );
       sessionStorage.setItem(
         "ticket_purchase_movie_id",
