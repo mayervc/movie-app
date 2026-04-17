@@ -1,10 +1,8 @@
 export interface CreateCheckoutSessionRequest {
-  showtime_id: number;
-  seat_ids: number[];
-  /** Opcional: para que el BE arme success_url y cancel_url con el movieId */
-  movie_id?: number;
-  /** Email del usuario para que Stripe envíe la factura/recibo automáticamente */
-  customer_email?: string;
+  showtimeId: number;
+  seatIds: number[];
+  successUrl: string;
+  cancelUrl: string;
 }
 
 export interface CreateCheckoutSessionResponse {
@@ -12,7 +10,7 @@ export interface CreateCheckoutSessionResponse {
   sessionId?: string;
 }
 
-// === Estado de sesión ===
+// === Session status ===
 
 export interface SessionStatusResponse {
   status: "complete" | "expired" | "open";
@@ -20,7 +18,7 @@ export interface SessionStatusResponse {
   customer_email?: string;
 }
 
-// === Reembolsos ===
+// === Refunds ===
 
 export interface RefundRequest {
   ticket_id: number;
