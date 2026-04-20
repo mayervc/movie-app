@@ -33,9 +33,10 @@ export const getTrendingMovies = async (): Promise<Movie[]> => {
   return response.data?.data ?? response.data;
 };
 
-export const getTrendingMoviesPdf = async (): Promise<Blob> => {
+export const getTrendingMoviesPdf = async (signal?: AbortSignal): Promise<Blob> => {
   const response = await api.get("/movies/trending/pdf", {
     responseType: "blob",
+    signal,
   });
   return response.data;
 };

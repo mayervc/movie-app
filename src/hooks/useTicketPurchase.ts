@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { useAuth } from "@/context/AuthContext";
 import { cinemasService } from "@/services/cinemas.service";
 import { showtimesService } from "@/services/showtimes.service";
 import { roomsService } from "@/services/rooms.service";
@@ -14,9 +13,16 @@ import type { RoomWithSeats } from "@/types/room.types";
 
 export type PurchaseStep = "cinema" | "showtime" | "seats" | "confirm";
 
-export const useTicketPurchase = (movieId: number) => {
-  const { user } = useAuth();
+type AxiosLikeError = { response?: { data?: { errors?: Array<string | { message: string }> } } };
 
+const extractErrorMessage = (err: unknown, fallback: string): string => {
+  const errors = (err as AxiosLikeError)?.response?.data?.errors;
+  if (!Array.isArray(errors)) return fallback;
+  const first = errors[0];
+  return typeof first === "string" ? first : first?.message ?? fallback;
+};
+
+export const useTicketPurchase = (movieId: number) => {
   // Estado del flujo
   const [step, setStep] = useState<PurchaseStep>("cinema");
 
@@ -64,14 +70,8 @@ export const useTicketPurchase = (movieId: number) => {
         ...(query?.trim() && { q: query.trim() }),
       });
       setCinemas(response.cinemas);
-    } catch (err: any) {
-      const errors = err.response?.data?.errors;
-      const message = Array.isArray(errors)
-        ? typeof errors[0] === "string"
-          ? errors[0]
-          : errors[0]?.message
-        : "Error al buscar cines";
-      setCinemasError(message);
+    } catch (err: unknown) {
+      setCinemasError(extractErrorMessage(err, "Error al buscar cines"));
     } finally {
       setLoadingCinemas(false);
     }
@@ -103,14 +103,8 @@ export const useTicketPurchase = (movieId: number) => {
           date,
         });
         setShowtimeResults(results);
-      } catch (err: any) {
-        const errors = err.response?.data?.errors;
-        const message = Array.isArray(errors)
-          ? typeof errors[0] === "string"
-            ? errors[0]
-            : errors[0]?.message
-          : "Error al buscar horarios";
-        setShowtimesError(message);
+      } catch (err: unknown) {
+        setShowtimesError(extractErrorMessage(err, "Error al buscar horarios"));
       } finally {
         setLoadingShowtimes(false);
       }
@@ -137,14 +131,8 @@ export const useTicketPurchase = (movieId: number) => {
         setShowtimeDetails(details);
         setRoomData(room);
         setStep("seats");
-      } catch (err: any) {
-        const errors = err.response?.data?.errors;
-        const message = Array.isArray(errors)
-          ? typeof errors[0] === "string"
-            ? errors[0]
-            : errors[0]?.message
-          : "Error al obtener detalles del horario";
-        setShowtimesError(message);
+      } catch (err: unknown) {
+        setShowtimesError(extractErrorMessage(err, "Error al obtener detalles del horario"));
       } finally {
         setLoadingDetails(false);
       }
@@ -191,23 +179,16 @@ export const useTicketPurchase = (movieId: number) => {
         selectedDate || ""
       );
       window.location.href = url;
-    } catch (err: any) {
-      const errors = err.response?.data?.errors;
-      let message: string;
-      if (Array.isArray(errors)) {
-        message = errors
-          .map((e: string | { message: string }) =>
-            typeof e === "string" ? e : e.message
-          )
-          .join(". ");
-      } else {
-        message = "Error al iniciar el pago. Intenta de nuevo.";
-      }
+    } catch (err: unknown) {
+      const errors = (err as AxiosLikeError)?.response?.data?.errors;
+      const message = Array.isArray(errors)
+        ? errors.map((e) => (typeof e === "string" ? e : e.message)).join(". ")
+        : "Error al iniciar el pago. Intenta de nuevo.";
       setPurchaseError(message);
     } finally {
       setPurchasing(false);
     }
-  }, [movieId, selectedShowtime, selectedSeats, selectedDate, user?.email]);
+  }, [movieId, selectedShowtime, selectedSeats, selectedDate]);
 
   // Navegar entre pasos
   const goToStep = useCallback((newStep: PurchaseStep) => {

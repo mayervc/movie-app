@@ -3,6 +3,8 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
+  useMemo,
   ReactNode,
 } from "react";
 import { loginUser, registerUser, type RegisterData } from "@/services/auth.service";
@@ -40,44 +42,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await loginUser(email, password);
-      localStorage.setItem("token", response.access_token);
-      localStorage.setItem("user", JSON.stringify(response.user));
-      setUser(response.user);
-    } catch (error) {
-      throw error;
-    }
-  };
+  const login = useCallback(async (email: string, password: string) => {
+    const response = await loginUser(email, password);
+    localStorage.setItem("token", response.access_token);
+    localStorage.setItem("user", JSON.stringify(response.user));
+    setUser(response.user);
+  }, []);
 
-  const register = async (data: RegisterData) => {
-    try {
-      await registerUser(data);
-      // BE does not return a token on signup — auto-login to get one
-      await login(data.email, data.password);
-    } catch (error) {
-      throw error;
-    }
-  };
+  const register = useCallback(async (data: RegisterData) => {
+    await registerUser(data);
+    // BE does not return a token on signup — auto-login to get one
+    await login(data.email, data.password);
+  }, [login]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setUser(null);
-  };
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      user,
+      isAuthenticated: !!user,
+      isLoading,
+      login,
+      register,
+      logout,
+    }),
+    [user, isLoading, login, register, logout]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        login,
-        register,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

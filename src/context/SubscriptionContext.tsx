@@ -4,6 +4,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   ReactNode,
 } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -131,20 +132,33 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     [isSubscribed, subscription, freeTicketsRemaining, discountPercent]
   );
 
+  const value = useMemo(
+    () => ({
+      subscription,
+      loading,
+      isSubscribed,
+      isCanceling,
+      discountPercent,
+      freeTicketsRemaining,
+      planName,
+      refresh: fetchSubscription,
+      calculatePrice,
+    }),
+    [
+      subscription,
+      loading,
+      isSubscribed,
+      isCanceling,
+      discountPercent,
+      freeTicketsRemaining,
+      planName,
+      fetchSubscription,
+      calculatePrice,
+    ]
+  );
+
   return (
-    <SubscriptionContext.Provider
-      value={{
-        subscription,
-        loading,
-        isSubscribed,
-        isCanceling,
-        discountPercent,
-        freeTicketsRemaining,
-        planName,
-        refresh: fetchSubscription,
-        calculatePrice,
-      }}
-    >
+    <SubscriptionContext.Provider value={value}>
       {children}
     </SubscriptionContext.Provider>
   );
