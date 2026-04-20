@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Film,
@@ -50,7 +50,6 @@ export const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showRequirements, setShowRequirements] = useState(false);
   const { register } = useAuth();
-  const navigate = useNavigate();
 
   const validateEmail = (email: string): boolean => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -84,7 +83,7 @@ export const Register = () => {
         firstName: firstName.trim() || undefined,
         lastName: lastName.trim() || undefined,
       });
-      navigate("/");
+      // PublicRoute redirects to "/" once isAuthenticated becomes true
     } catch (err) {
       const errorMessage =
         err instanceof Error

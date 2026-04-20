@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Film, Mail, Lock, Eye, EyeOff, Sparkles, Clapperboard } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -11,7 +11,6 @@ export const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +19,7 @@ export const Login = () => {
 
     try {
       await login(email, password);
-      navigate("/");
+      // PublicRoute redirects to "/" once isAuthenticated becomes true
     } catch (err) {
       // El error ya viene formateado desde el servicio/auth context
       const errorMessage =
