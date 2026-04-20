@@ -26,6 +26,13 @@ export interface RegisterResponse {
 // Tipo genérico para respuestas de autenticación
 export type AuthResponse = LoginResponse | RegisterResponse;
 
+export interface UpdateProfileRequest {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  password?: string;
+}
+
 // Estructura de errores del backend
 export interface ApiError {
   field?: string;
