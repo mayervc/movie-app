@@ -3,6 +3,8 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
+  useMemo,
   ReactNode,
 } from "react";
 import type { Movie } from "@/types/movie.types";
@@ -28,22 +30,26 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   }, [favorites]);
 
-  const addFavorite = (movie: Movie) => {
+  const addFavorite = useCallback((movie: Movie) => {
     setFavorites((prev) => [...prev, movie]);
-  };
+  }, []);
 
-  const removeFavorite = (movieId: number) => {
+  const removeFavorite = useCallback((movieId: number) => {
     setFavorites((prev) => prev.filter((m) => m.id !== movieId));
-  };
+  }, []);
 
-  const isFavorite = (movieId: number) => {
-    return favorites.some((m) => m.id === movieId);
-  };
+  const isFavorite = useCallback(
+    (movieId: number) => favorites.some((m) => m.id === movieId),
+    [favorites]
+  );
+
+  const value = useMemo(
+    () => ({ favorites, addFavorite, removeFavorite, isFavorite }),
+    [favorites, addFavorite, removeFavorite, isFavorite]
+  );
 
   return (
-    <FavoritesContext.Provider
-      value={{ favorites, addFavorite, removeFavorite, isFavorite }}
-    >
+    <FavoritesContext.Provider value={value}>
       {children}
     </FavoritesContext.Provider>
   );

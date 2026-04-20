@@ -1,31 +1,39 @@
-import { useEffect, useState, useCallback } from "react";
+import { lazy, Suspense, useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { AlertCircle, RefreshCw, FileText } from "lucide-react";
 import { getTrendingMoviesPdf } from "@/services/movies.service";
-import { PDFViewer } from "@/components/PDFViewer";
+
+const PDFViewer = lazy(() =>
+  import("@/components/PDFViewer").then((m) => ({ default: m.PDFViewer }))
+);
 
 export const TrendingPDF = () => {
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPdf = useCallback(async () => {
+  const fetchPdf = useCallback(async (signal?: AbortSignal) => {
     setPdfBlob(null);
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-      const blob = await getTrendingMoviesPdf();
-      setPdfBlob(blob);
-    } catch {
-      setError("No se pudo cargar el PDF. Intenta de nuevo.");
+      const blob = await getTrendingMoviesPdf(signal);
+      if (!signal?.aborted) setPdfBlob(blob);
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      if (!signal?.aborted) {
+        setError("No se pudo cargar el PDF. Intenta de nuevo.");
+      }
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchPdf();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    const controller = new AbortController();
+    fetchPdf(controller.signal);
+    return () => controller.abort();
+  }, [fetchPdf]);
 
   return (
     <div className="min-h-screen overflow-x-hidden">
@@ -74,7 +82,7 @@ export const TrendingPDF = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={fetchPdf}
+              onClick={() => fetchPdf()}
               className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-300 text-sm transition-colors"
             >
               <RefreshCw size={16} />
@@ -89,7 +97,15 @@ export const TrendingPDF = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <PDFViewer blob={pdfBlob} downloadFilename="trending-movies.pdf" />
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center py-20">
+                  <div className="animate-spin rounded-full h-14 w-14 border-t-2 border-b-2 border-blue-500" />
+                </div>
+              }
+            >
+              <PDFViewer blob={pdfBlob} downloadFilename="trending-movies.pdf" />
+            </Suspense>
           </motion.div>
         )}
       </div>
