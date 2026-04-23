@@ -32,12 +32,6 @@ export const CinemaSelector = ({
   const [hoveredCinema, setHoveredCinema] = useState<number | null>(null);
   const debouncedQuery = useDebounce(searchQuery, 400);
 
-  // Cargar cinemas al montar
-  useEffect(() => {
-    onSearch();
-  }, []);
-
-  // Buscar cuando cambia el query (debounced)
   useEffect(() => {
     onSearch(debouncedQuery || undefined);
   }, [debouncedQuery]);
