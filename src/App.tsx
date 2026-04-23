@@ -16,6 +16,7 @@ import { PurchaseHistory } from "@/pages/PurchaseHistory";
 import { SubscriptionSuccess } from "@/pages/SubscriptionSuccess";
 import { SubscriptionCancel } from "@/pages/SubscriptionCancel";
 import { TrendingPDF } from "@/pages/TrendingPDF";
+import { Profile } from "@/pages/Profile";
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -184,6 +185,16 @@ function AppRoutes() {
           <ProtectedRoute>
             <AuthenticatedLayout>
               <TrendingPDF />
+            </AuthenticatedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <AuthenticatedLayout>
+              <Profile />
             </AuthenticatedLayout>
           </ProtectedRoute>
         }
