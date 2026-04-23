@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Film, Mail, Lock, Eye, EyeOff, Sparkles, Clapperboard } from "lucide-react";
+import { Film, Mail, Lock, Eye, EyeOff, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export const Login = () => {
@@ -19,9 +19,7 @@ export const Login = () => {
 
     try {
       await login(email, password);
-      // PublicRoute redirects to "/" once isAuthenticated becomes true
     } catch (err) {
-      // El error ya viene formateado desde el servicio/auth context
       const errorMessage =
         err instanceof Error
           ? err.message
@@ -39,101 +37,9 @@ export const Login = () => {
         {/* Gradiente principal */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
         
-        {/* Círculos decorativos animados */}
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.4, 0.6, 0.4],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-violet-500/30 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.4, 0.2],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-3xl"
-        />
-
-        {/* Iconos flotantes decorativos */}
-        <motion.div
-          animate={{
-            y: [0, -20, 0],
-            rotate: [0, 10, 0],
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute top-20 left-[15%] text-blue-500/20"
-        >
-          <Film size={80} />
-        </motion.div>
-        <motion.div
-          animate={{
-            y: [0, 20, 0],
-            rotate: [0, -15, 0],
-          }}
-          transition={{
-            duration: 7,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute bottom-32 left-[10%] text-violet-500/20"
-        >
-          <Clapperboard size={60} />
-        </motion.div>
-        <motion.div
-          animate={{
-            y: [0, -15, 0],
-            rotate: [0, 20, 0],
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute top-32 right-[12%] text-violet-500/20"
-        >
-          <Sparkles size={70} />
-        </motion.div>
-        <motion.div
-          animate={{
-            y: [0, 25, 0],
-            rotate: [0, -10, 0],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute bottom-20 right-[15%] text-blue-500/20"
-        >
-          <Film size={50} />
-        </motion.div>
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-violet-500/30 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-3xl" />
 
         {/* Grid de puntos decorativo */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.1)_1px,_transparent_1px)] bg-[length:40px_40px]" />
@@ -147,7 +53,7 @@ export const Login = () => {
         className="relative z-10 w-full max-w-md"
       >
         {/* Card con glass morphism */}
-        <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl shadow-black/20">
+        <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-3xl p-8 shadow-2xl shadow-black/20">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

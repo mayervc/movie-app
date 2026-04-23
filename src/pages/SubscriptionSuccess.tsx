@@ -37,11 +37,7 @@ export const SubscriptionSuccess = () => {
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.05)_1px,_transparent_1px)] bg-[length:40px_40px]" />
-        <motion.div
-          animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.25, 0.1] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-violet-500/20 rounded-full blur-3xl"
-        />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-violet-500/20 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-4">
