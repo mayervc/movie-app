@@ -1,3 +1,12 @@
+export interface FilmographyMovie {
+  id: number;
+  title: string;
+  poster: string;
+  year: number;
+  character: string;
+  rating?: number;
+}
+
 export interface Actor {
   id: number;
   name: string;
@@ -6,4 +15,5 @@ export interface Actor {
   birthdate?: string;
   birthplace?: string;
   knownForDepartment?: string;
+  movies?: FilmographyMovie[];
 }
