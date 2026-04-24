@@ -139,20 +139,26 @@ export const MovieDetails = () => {
                 <h2 className="text-2xl font-bold mb-4">Reparto</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {movie.cast.slice(0, 8).map((actor) => (
-                    <div key={actor.id} className="text-center">
+                    <Link
+                      key={actor.id}
+                      to={`/actor/${actor.id}`}
+                      className="text-center group"
+                    >
                       {actor.profilePath && (
                         <img
                           src={actor.profilePath}
                           alt={actor.name}
                           loading="lazy"
-                          className="w-full rounded-lg mb-2"
+                          className="w-full rounded-lg mb-2 group-hover:opacity-80 transition-opacity duration-200"
                         />
                       )}
-                      <p className="text-sm font-medium">{actor.name}</p>
+                      <p className="text-sm font-medium group-hover:text-blue-400 transition-colors duration-200">
+                        {actor.name}
+                      </p>
                       <p className="text-xs text-slate-400">
                         {actor.character}
                       </p>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
