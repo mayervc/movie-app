@@ -15,16 +15,14 @@ import {
 } from "lucide-react";
 
 type HistoryTab = "tickets" | "subscriptions";
-import { ordersService } from "@/services/orders.service";
+import { usersService } from "@/services/users.service";
 import { subscriptionsService } from "@/services/subscriptions.service";
-import type {
-  OrderHistoryItem,
-  SubscriptionPurchaseItem,
-} from "@/types/order.types";
+import type { SubscriptionPurchaseItem } from "@/types/order.types";
+import type { UserTicket } from "@/types/ticket.types";
 
 export const PurchaseHistory = () => {
   const [activeTab, setActiveTab] = useState<HistoryTab>("tickets");
-  const [orders, setOrders] = useState<OrderHistoryItem[]>([]);
+  const [tickets, setTickets] = useState<UserTicket[]>([]);
   const [subscriptionPurchases, setSubscriptionPurchases] = useState<
     SubscriptionPurchaseItem[]
   >([]);
@@ -37,12 +35,12 @@ export const PurchaseHistory = () => {
       try {
         setLoading(true);
         setError(null);
-        const [ordersRes, subRes] = await Promise.all([
-          ordersService.getMyOrders(),
+        const [ticketsRes, subRes] = await Promise.all([
+          usersService.getMyTickets(),
           subscriptionsService.getSubscriptionPurchases(),
         ]);
         if (!cancelled) {
-          setOrders(ordersRes.orders ?? []);
+          setTickets(ticketsRes ?? []);
           setSubscriptionPurchases(subRes.purchases ?? []);
         }
       } catch (err: unknown) {
@@ -55,7 +53,7 @@ export const PurchaseHistory = () => {
             : (errors[0] as { message?: string })?.message
           : "Error al cargar el historial de compras.";
         setError(message ?? null);
-        setOrders([]);
+        setTickets([]);
         setSubscriptionPurchases([]);
       } finally {
         if (!cancelled) setLoading(false);
@@ -163,7 +161,7 @@ export const PurchaseHistory = () => {
                 >
                   Compras de tickets
                 </span>
-                {orders.length > 0 && (
+                {tickets.length > 0 && (
                   <span
                     className={`min-w-[1.25rem] h-5 px-1.5 flex items-center justify-center rounded-md text-xs font-bold ${
                       activeTab === "tickets"
@@ -171,7 +169,7 @@ export const PurchaseHistory = () => {
                         : "bg-slate-700/60 text-slate-400"
                     }`}
                   >
-                    {orders.length}
+                    {tickets.length}
                   </span>
                 )}
               </span>
@@ -255,75 +253,63 @@ export const PurchaseHistory = () => {
                   transition={{ duration: 0.25 }}
                   className="space-y-4"
                 >
-                  {orders.length > 0 ? (
-                    orders.map((order, index) => (
+                  {tickets.length > 0 ? (
+                    tickets.map((ticket, index) => (
                       <motion.div
-                        key={`ticket-${order.id}`}
+                        key={`ticket-${ticket.id}`}
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.04 }}
                       >
-                        <Link
-                          to={`/movie/${order.movie_id}`}
-                          className="block group"
-                        >
-                          <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/40 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:border-slate-600/50 hover:bg-slate-800/60">
-                            <div className="flex items-start gap-4">
-                              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-violet-600/20 border border-blue-500/20 flex items-center justify-center flex-shrink-0 group-hover:from-blue-500/30 group-hover:to-violet-600/30 transition-colors">
-                                <Film size={24} className="text-blue-400" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h3 className="text-slate-50 font-bold text-lg truncate group-hover:text-blue-400 transition-colors">
-                                  {order.movie_title}
-                                </h3>
-                                <p className="text-slate-400 text-sm mt-0.5">
-                                  {order.cinema_name}
-                                </p>
-                                <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-sm">
-                                  <div className="flex items-center gap-2">
-                                    <Calendar size={14} className="text-blue-400 flex-shrink-0" />
-                                    <span className="text-slate-400">Fecha:</span>
-                                    <span className="text-slate-200 font-medium capitalize">
-                                      {formatDate(order.showtime_date)}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Clock size={14} className="text-violet-400 flex-shrink-0" />
-                                    <span className="text-slate-400">Hora:</span>
-                                    <span className="text-slate-200 font-medium">
-                                      {order.showtime_time}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Building2 size={14} className="text-emerald-400 flex-shrink-0" />
-                                    <span className="text-slate-400">Sala:</span>
-                                    <span className="text-slate-200 font-medium">
-                                      {order.room_name}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="mt-3 flex flex-wrap items-center gap-3">
-                                  <div className="flex items-center gap-2 px-2.5 py-1 bg-slate-900/40 border border-slate-700/30 rounded-lg">
-                                    <Ticket size={14} className="text-amber-400" />
-                                    <span className="text-slate-300 text-sm">
-                                      {order.tickets_count} ticket
-                                      {order.tickets_count !== 1 ? "s" : ""}
-                                    </span>
-                                  </div>
-                                  <span className="text-emerald-400 font-bold text-lg">
-                                    ${typeof order.total_amount === "number" ? order.total_amount.toFixed(2) : order.total_amount}
+                        <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/40 rounded-2xl p-5 sm:p-6">
+                          <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-violet-600/20 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                              <Film size={24} className="text-blue-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-slate-50 font-bold text-lg truncate">
+                                {ticket.movie_title}
+                              </h3>
+                              <p className="text-slate-400 text-sm mt-0.5">
+                                {ticket.cinema_name}
+                              </p>
+                              <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-sm">
+                                <div className="flex items-center gap-2">
+                                  <Calendar size={14} className="text-blue-400 flex-shrink-0" />
+                                  <span className="text-slate-400">Fecha:</span>
+                                  <span className="text-slate-200 font-medium capitalize">
+                                    {formatDate(ticket.showtime_date)}
                                   </span>
-                                  <span className="text-slate-500 text-xs ml-auto">
-                                    Comprado: {formatCreatedAt(order.created_at)}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Clock size={14} className="text-violet-400 flex-shrink-0" />
+                                  <span className="text-slate-400">Hora:</span>
+                                  <span className="text-slate-200 font-medium">
+                                    {ticket.showtime_time}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Building2 size={14} className="text-emerald-400 flex-shrink-0" />
+                                  <span className="text-slate-400">Sala:</span>
+                                  <span className="text-slate-200 font-medium">
+                                    {ticket.room_name}
                                   </span>
                                 </div>
                               </div>
-                              <div className="flex-shrink-0 self-center">
-                                <ArrowRight size={20} className="text-slate-500 group-hover:text-blue-400 transition-colors" />
+                              <div className="mt-3 flex flex-wrap items-center gap-3">
+                                <div className="flex items-center gap-2 px-2.5 py-1 bg-slate-900/40 border border-slate-700/30 rounded-lg">
+                                  <Ticket size={14} className="text-amber-400" />
+                                  <span className="text-slate-300 text-sm">
+                                    Asiento {ticket.seat_label}
+                                  </span>
+                                </div>
+                                <span className="text-emerald-400 font-bold text-lg">
+                                  ${typeof ticket.ticket_price === "number" ? ticket.ticket_price.toFixed(2) : ticket.ticket_price}
+                                </span>
                               </div>
                             </div>
                           </div>
-                        </Link>
+                        </div>
                       </motion.div>
                     ))
                   ) : (
