@@ -11,13 +11,18 @@ export const ActorDetail = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (id) {
-      actorsService
-        .getActorById(id)
-        .then(setActor)
-        .catch(() => setActor(null))
-        .finally(() => setLoading(false));
-    }
+    if (!id) return;
+    const fetch = async () => {
+      try {
+        const data = await actorsService.getActorById(id);
+        setActor(data);
+      } catch {
+        setActor(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
   }, [id]);
 
   if (loading) {

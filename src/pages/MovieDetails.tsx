@@ -14,12 +14,18 @@ export const MovieDetails = () => {
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
   useEffect(() => {
-    if (id) {
-      getMovieById(id)
-        .then(setMovie)
-        .catch(() => setMovie(null))
-        .finally(() => setLoading(false));
-    }
+    if (!id) return;
+    const fetch = async () => {
+      try {
+        const data = await getMovieById(id);
+        setMovie(data);
+      } catch {
+        setMovie(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
   }, [id]);
 
   if (loading) {
